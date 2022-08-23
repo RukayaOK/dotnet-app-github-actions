@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SimpleWorkerService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
