@@ -1,0 +1,146 @@
+name: 'SimpleWebService'
+ 
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+env:
+  AZURE_WEBAPP_NAME: SimpleWebService
+  AZURE_WEBAPP_PACKAGE_PATH: './Src/Presentation/BradyWeather.Blazor.Server'    # set this to the path to your web app project, defaults to the repository root
+  DOTNET_VERSION: '3.1'           # set this to the dot net version to use
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    #environment: Development
+ 
+
+    defaults:
+      run:
+        shell: bash
+ 
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_wrapper: false
+         
+    - name: 'Terraform Init'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'init'
+        tf_actions_working_dir: "./Terraform"
+ 
+    - name: 'Terraform Validate'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'validate'
+        tf_actions_working_dir: "./Terraform"
+         
+    - name: 'Terraform Plan'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'plan'
+        tf_actions_working_dir: "./Terraform"
+ 
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'apply'
+        tf_actions_working_dir: "./Terraform"
+    
+    - name: Terraform Output
+      id: terraform
+      if: github.ref == 'refs/heads/main'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'output'
+        tf_actions_working_dir: "./Terraform"
+
+    - name: Write Ouput to Artifact and Envs
+      id: terraform_output
+      env:
+          APP_NAMES: ${{ steps.terraform.outputs.tf_actions_output }}    
+      run: |
+        mkdir -p path/to/artifact
+        WEB_APP_NAMES=$(echo $APP_NAMES | jq -r '.app_service_names.value' | tr -d '[:space:][]')
+        echo $WEB_APP_NAMES
+        echo $WEB_APP_NAMES > path/to/artifact/app_service_names.txt
+        echo "ENV_WEB_APP_NAMES=$(echo $WEB_APP_NAMES)" >> $GITHUB_ENV
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: my-artifact
+        path: path/to/artifact  
+      
+    - name: Store Web App Names
+      id: set-matrix
+      env:
+        WEB_APP_NAMES_FORMATTED: ${{ steps.script.outputs.stdout }}
+      run: |
+        echo "::set-output name=matrix::$(echo $WEB_APP_NAMES_FORMATTED)"
+      
+  
+  build:
+    needs: terraform
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJson(needs.terraform.outputs.matrix)}}
+    
+    steps:
+      # Checkout the repo
+      - uses: actions/checkout@main
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      
+      # Setup .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }} 
+      
+      # Run dotnet build and publish
+      - name: dotnet build and publish
+        run: |
+          dotnet restore
+          dotnet build --configuration Release
+          dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/publish' 
+      
+      - name: Print Env Variable
+        env: 
+          HARDCODED_NAME: ${{ env.AZURE_WEBAPP_NAME }}
+        run: |
+          echo $HARDCODED_NAME
+          
+      # Deploy to Azure Web apps
+      - name: 'Run Azure webapp deploy action using publish profile credentials'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ matrix.app_service_name }}
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/publish'
+      
+      - name: logout
+        run: |
+          az logout

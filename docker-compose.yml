@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  simpleworkerservice:
+    image: ${DOCKER_REGISTRY-}simpleworkerservice
+    container_name: simpleworkerservice
+    build:
+      context: .
+      dockerfile: SimpleWorkerService/Dockerfile
+    environment:
+      - SecretPassword
