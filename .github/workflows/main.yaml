@@ -4,6 +4,9 @@ on:
     
 name: Linux_Container_Workflow
 
+env:
+  SecretPassword: ${{ secrets.SECRETPASSWORD }}
+
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
