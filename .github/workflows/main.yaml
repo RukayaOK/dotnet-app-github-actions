@@ -8,11 +8,11 @@ on:
         required: true
         default: 'Information'
 
-name: Linux_Container_Workflow
+name: SimpleWorkerService
 
 env:
   SECRETPASSWORD: ${{ secrets.SECRETPASSWORD }}
-  Logging__LogLevel__Microsoft: ${{ github.event.inputs.logLevel }}
+  LOGGINGLEVELS: ${{ github.event.inputs.logLevel }}
   LOCATION: uk south
 
 
@@ -53,5 +53,5 @@ jobs:
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
             name: aci-simpleworkerservice
-            secure-environment-variables: SecretPassword=${{env.SECRETPASSWORD}}
+            secure-environment-variables: SecretPassword=${{env.SECRETPASSWORD}} Logging__LogLevel__Microsoft=${{env.LOGGINGLEVELS}}
             location: ${{env.LOCATION}}
