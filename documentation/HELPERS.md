@@ -9,3 +9,7 @@ Purpose of launchsettings.json
 
 Helpers
 https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
+
+Env variables in pipeline
+https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-6.0#set-log-level-by-command-line-environment-variables-and-other-configuration
+

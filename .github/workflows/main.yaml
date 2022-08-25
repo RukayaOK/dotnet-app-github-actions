@@ -6,12 +6,14 @@ on:
       logLevel:
         description: 'Log level'     
         required: true
-        default: 'warning'
+        default: 'Information'
 
 name: Linux_Container_Workflow
 
 env:
   SecretPassword: ${{ secrets.SECRETPASSWORD }}
+  Logging__LogLevel__Microsoft: ${{ github.event.inputs.logLevel }}
+
 
 jobs:
     build-and-deploy:
