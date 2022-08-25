@@ -28,22 +28,22 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var result = await client.GetAsync(_config.GetValue<string>("WebsiteURL"));
-        var pollInterval = _config.GetValue<int>("PollInterval");
+        string websiteURL = _config.GetValue<string>("WebsiteURL");
+        var result = await client.GetAsync(websiteURL);
+        int pollInterval = _config.GetValue<int>("PollInterval");
 
         while (!stoppingToken.IsCancellationRequested)
         {
             if (result.IsSuccessStatusCode)
             {
-                _logger.LogInformation("The website is up. Status code {StatusCode}", result.StatusCode);
+                _logger.LogInformation("The website is {WebsiteURL} up. Status code {StatusCode}", websiteURL, result.StatusCode);
                 _logger.LogInformation("My secret password is: {Password}", _config.GetValue<string>("SecretPassword"));
-               // _logger.LogInformation("My secret password is: {Password}", Environment.GetEnvironmentVariable("ClientId"));
 
             }
             else
             {
                 // send email that website is down 
-                _logger.LogError("The website is down. Status code {StatusCode}", result.StatusCode);
+                _logger.LogError("The website is {WebsiteURL} down. Status code {StatusCode}", websiteURL, result.StatusCode);
             }
             await Task.Delay(pollInterval, stoppingToken);
         }

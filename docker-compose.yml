@@ -8,4 +8,5 @@ services:
       context: .
       dockerfile: SimpleWorkerService/Dockerfile
     environment:
+      - DOTNET_ENVIRONMENT
       - SecretPassword
