@@ -27,7 +27,7 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            docker build SimpleWorkerService -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/SimpleWorkerService:${{ github.sha }}
+            docker build . -f SimpleWorkerService/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/SimpleWorkerService:${{ github.sha }}
             docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/SimpleWorkerService:${{ github.sha }}
 
         # Deploy to a container instance
