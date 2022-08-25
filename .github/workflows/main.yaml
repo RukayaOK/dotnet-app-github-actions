@@ -11,8 +11,9 @@ on:
 name: Linux_Container_Workflow
 
 env:
-  SecretPassword: ${{ secrets.SECRETPASSWORD }}
+  SECRETPASSWORD: ${{ secrets.SECRETPASSWORD }}
   Logging__LogLevel__Microsoft: ${{ github.event.inputs.logLevel }}
+  LOCATION: uk-south
 
 
 jobs:
@@ -52,4 +53,5 @@ jobs:
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
             name: aci-simpleworkerservice
-            location: 'uk south'
+            secure-environment-variables: SecretPassword=${{env.SECRETPASSWORD}}
+            location: ${{env.LOCATION}}
