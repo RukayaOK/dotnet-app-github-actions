@@ -13,7 +13,7 @@ name: Linux_Container_Workflow
 env:
   SECRETPASSWORD: ${{ secrets.SECRETPASSWORD }}
   Logging__LogLevel__Microsoft: ${{ github.event.inputs.logLevel }}
-  LOCATION: uk-south
+  LOCATION: uk south
 
 
 jobs:
