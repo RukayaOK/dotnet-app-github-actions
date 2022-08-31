@@ -1,5 +1,5 @@
 on:
-  #push:
+  # push:
   #  branches: [ "main" ]
   workflow_dispatch:
     inputs:
@@ -11,10 +11,11 @@ on:
 name: SimpleWorkerService
 
 env:
-  SECRETPASSWORD: ${{ secrets.SECRETPASSWORD }}
-  LOGGINGLEVELS: ${{ github.event.inputs.logLevel }}
-  LOCATION: uk south
-
+  containerName: simpleworkerservice
+  SecretPassword: ${{ secrets.SECRETPASSWORD }}
+  Logging__LogLevel__Microsoft: ${{ github.event.inputs.logLevel }}
+  location: uk south
+  dockerImage: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.containerName}}:${{ github.sha }}
 
 jobs:
     build-and-deploy:
@@ -32,15 +33,15 @@ jobs:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
        
        # Build and push image to container registry
-        - name: 'Build and push image'
+        - name: 'Build Image'
           uses: azure/docker-login@v1
           with:
             login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            docker build . -f SimpleWorkerService/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
-            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
+            docker build . -f build/Dockerfile -t ${{env.dockerImage}}
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.containerName}}:${{ github.sha }}
 
         # Deploy to a container instance
         - name: 'Deploy to Azure Container Instances'
@@ -48,10 +49,10 @@ jobs:
           with:
             resource-group: ${{ secrets.RESOURCE_GROUP }}
             dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
-            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
+            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{env.containerName}}:${{ github.sha }}
             registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
             registry-username: ${{ secrets.REGISTRY_USERNAME }}
             registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-            name: aci-simpleworkerservice
-            secure-environment-variables: SecretPassword=${{env.SECRETPASSWORD}} Logging__LogLevel__Microsoft=${{env.LOGGINGLEVELS}}
-            location: ${{env.LOCATION}}
+            name: aci-${{env.containerName}}
+            secure-environment-variables: SecretPassword=${{env.SecretPassword}} Logging__LogLevel__Microsoft=${{env.Logging__LogLevel__Microsoft}}
+            location: ${{env.location}}

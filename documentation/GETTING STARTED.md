@@ -105,3 +105,26 @@ When running this environment you will
     ```
     docker-compose build
     ```
+
+# Healthcheck 
+docker inspect --format='{{json .State.Health}}' simpleworkerservice
+
+
+dcproj
+
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk" DefaultTargets="Build">
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>{50AD9D39-C9D5-4423-BB98-35FBD697B9FC}</ProjectGuid>
+    <DockerComposeBaseFilePath>deploy/docker-compose/docker-compose</DockerComposeBaseFilePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="deploy\docker-compose\docker-compose.override.yml">
+      <DependentUpon>deploy\docker-compose\docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="deploy\docker-compose\docker-compose.yml" />
+    <None Include="deploy\docker-compose\.dockerignore" />
+  </ItemGroup>
+</Project>

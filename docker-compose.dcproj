@@ -4,12 +4,13 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>{50AD9D39-C9D5-4423-BB98-35FBD697B9FC}</ProjectGuid>
+    <DockerComposeBaseFilePath>deploy/docker-compose/docker-compose</DockerComposeBaseFilePath>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="docker-compose.override.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
+    <None Include="deploy\docker-compose\docker-compose.override.yml">
+      <DependentUpon>deploy\docker-compose\docker-compose.yml</DependentUpon>
     </None>
-    <None Include="docker-compose.yml" />
-    <None Include=".dockerignore" />
+    <None Include="deploy\docker-compose\docker-compose.yml" />
+    <None Include="deploy\docker-compose\.dockerignore" />
   </ItemGroup>
 </Project>

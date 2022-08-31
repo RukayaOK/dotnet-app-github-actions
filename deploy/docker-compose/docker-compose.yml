@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  simpleworkerservice:
+    image: simpleworkerservice
+    container_name: simpleworkerservice
+    build:
+      context: ../..
+      target: final
+      dockerfile: build/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT
+  simpleworkerservice.tests:
+    image: simpleworkerservice.tests
+    container_name: simpleworkerservice.tests
+    build:
+      context: ../..
+      target: runtests
+      dockerfile: build/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT
+      
+networks:
+  default:
+    name: simpleworkerservice.network

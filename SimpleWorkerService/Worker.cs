@@ -1,4 +1,6 @@
-﻿namespace SimpleWorkerService;
+﻿using URLValidation;
+
+namespace SimpleWorkerService;
 
 public class Worker : BackgroundService
 {
@@ -28,7 +30,14 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+
         string websiteURL = _config.GetValue<string>("WebsiteURL");
+        _logger.LogInformation("Trying to reach the website: {WebsiteURL} up.", websiteURL);
+
+        // checks url is valid
+        ValidateURL.IsValid(websiteURL);
+
+        // http call to url 
         var result = await client.GetAsync(websiteURL);
         int pollInterval = _config.GetValue<int>("PollInterval");
 
@@ -42,7 +51,6 @@ public class Worker : BackgroundService
             }
             else
             {
-                // send email that website is down 
                 _logger.LogError("The website is {WebsiteURL} down. Status code {StatusCode}", websiteURL, result.StatusCode);
             }
             await Task.Delay(pollInterval, stoppingToken);
