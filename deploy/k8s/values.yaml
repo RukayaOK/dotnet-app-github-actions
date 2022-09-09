@@ -1,1 +1,1 @@
-configMaps:
+configMaps: # infrastructure variables go here (or need to decide if in helm chart repo)

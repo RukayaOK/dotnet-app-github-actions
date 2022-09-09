@@ -33,3 +33,29 @@ https://blog.couchbase.com/docker-health-check-keeping-containers-healthy/
 
 docker-compose/vs
 https://docs.microsoft.com/en-us/visualstudio/containers/docker-compose-properties?view=vs-2022#example
+
+----
+
+az container create --resource-group frasers-rg --file ./deploy/aci/deploy-aci.yaml
+
+
+az container show --resource-group frasers-rg --name myContainerGroup --output table
+
+rukayaok ~/Documents/Work/dotnet/Examples/SimpleWorkerService [main] $ az container show --resource-group frasers-rg --name myContainerGroup --output table
+Name              ResourceGroup    Status    Image                                              IP:ports              Network    CPU/Memory       OsType    Location
+----------------  ---------------  --------  -------------------------------------------------  --------------------  ---------  ---------------  --------  ----------
+myContainerGroup  frasers-rg       Running   mcr.microsoft.com/azuredocs/aci-helloworld:latest  20.237.86.23:80,8080  Public     1.0 core/1.5 gb  Linux     eastus
+rukayaok ~/Documents/Work/dotnet/Examples/SimpleWorkerService [main] $ curl -I 20.237.86.23:80
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Wed, 29 Nov 2017 06:40:40 GMT
+ETag: W/"67f-16006818640"
+Content-Type: text/html; charset=UTF-8
+Content-Length: 1663
+Date: Wed, 31 Aug 2022 17:13:30 GMT
+Connection: keep-alive
+
+
+az container show -g frasers-rg -n anotherContainer

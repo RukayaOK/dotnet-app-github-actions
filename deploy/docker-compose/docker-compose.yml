@@ -4,12 +4,17 @@ services:
   simpleworkerservice:
     image: simpleworkerservice
     container_name: simpleworkerservice
+    ports: 
+      - "5009:5009"
     build:
       context: ../..
       target: final
       dockerfile: build/Dockerfile
     environment:
+      # infrastructure/runtime variables go here (this does not include secrets)
       - DOTNET_ENVIRONMENT
+      - HTTP_PORT
+      - GRPC_PORT
   simpleworkerservice.tests:
     image: simpleworkerservice.tests
     container_name: simpleworkerservice.tests
@@ -18,8 +23,12 @@ services:
       target: runtests
       dockerfile: build/Dockerfile
     environment:
+      # infrastructure/runtime variables go here (this does not include secrets)
       - DOTNET_ENVIRONMENT
+      - HTTP_PORT
+      - GRPC_PORT
       
+
 networks:
   default:
     name: simpleworkerservice.network

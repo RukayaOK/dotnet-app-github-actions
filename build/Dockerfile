@@ -22,9 +22,10 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && echo $USERNAME ALL=\(root\) NOPASSWD:/usr/bin/dotnet > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
+USER builduser
 
 ###################################
-# BUILD IMAGE -- image for service
+# BUILD IMAGE -- image for build
 ###################################
 FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_SDK_VERSION as build 
 
@@ -41,7 +42,7 @@ ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && apt-get update \
-    && apt-get install telnet -y \
+    && apt-get install lsof -y \
     && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:/usr/bin/dotnet > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
@@ -100,8 +101,9 @@ COPY --from=publish /app/publish .
 
 USER $USERNAME
 
-EXPOSE 5009
-HEALTHCHECK --interval=10s --timeout=30s --start-period=3s --retries=3 CMD ["/usr/bin/lsof", "-i", ":5009"]
+# is this needed 
+EXPOSE 5009 
+HEALTHCHECK --interval=10s --timeout=30s --start-period=3s --retries=3 CMD ["/usr/bin/lsof", "-i", "TCP:5009"]
 
 # run application
 ENTRYPOINT ["dotnet", "SimpleWorkerService.dll"]
