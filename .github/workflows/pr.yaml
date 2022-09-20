@@ -25,14 +25,6 @@ jobs:
 
       - name: "Build the App"
         run: dotnet build --no-restore
-      
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: 'csharp'
-      
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2 
 
   build-test:
     name: "Test Application"
