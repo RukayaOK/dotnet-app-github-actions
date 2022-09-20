@@ -9,23 +9,6 @@ env:
   TESTS_FOLDER: SimpleWorkerService.Tests
 
 jobs:
-  build-scan:
-    name: "Scan Image"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: "Restore dependencies"
-        run: dotnet restore
-
-      - name: "Build the App"
-        run: dotnet build --no-restore
-
   build-test:
     name: "Test Application"
     if: ${{env.TESTS_FOLDER}}
