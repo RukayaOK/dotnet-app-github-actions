@@ -1,24 +1,74 @@
-#
-name: Pull Request Workflow
+name: Build and Test .NET Code
+
 on:
-  pull_request:
-    types: [ assigned, opened, synchronize, reopened ]
+  workflow_dispatch:
 
 env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_NOLOGO: true
+  DOTNET_VERSION: 3.1.x
+  WORKDIR: ./
+  TESTS_FOLDER: SimpleWorkerService.Tests
 
-# on pr - run lint, tests, checkov in parellel 
 jobs:
-  lint:
+  build-scan:
+    name: "Scan Image"
     runs-on: ubuntu-latest
-
     steps:
+      - uses: actions/checkout@v2
 
-        # Checkout the Repository
-        - name: 'Checkout GitHub Action'
-          uses: actions/checkout@main
-        
+      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: "Restore dependencies"
+        run: dotnet restore
 
+      - name: "Build the App"
+        run: dotnet build --no-restore
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: 'csharp'
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2 
 
+  build-test:
+    name: "Test Application"
+    if: ${{env.TESTS_FOLDER}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: "Restore dependencies"
+        run: dotnet restore
+
+      - name: "Build the App"
+        run: dotnet build --no-restore
+
+      - name: "Run Unit Tests"
+        id: unittest
+        run: |
+          dotnet test --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults --no-build --filter "FullyQualifiedName~${{env.TESTS_FOLDER}}"
+      
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          fail-on-error: false
+          name: Test Report           # Name of the check run which will be created
+          path: ${{ env.DOTNET_VERSION }}/TestResults/TestResults.trx    # Path to test results
+          reporter: dotnet-trx        # Format of test results
+            
+      - name: If PR Then Comment on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: allthatjazzleo/actions-pull-request-add-comment@master
+        with:
+          message: 'Unit tests failed'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
