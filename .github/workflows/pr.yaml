@@ -24,7 +24,7 @@ jobs:
         run: dotnet restore SimpleWorkerService.sln
 
       - name: "Build the App"
-        run: dotnet build -c Release --no-restore SimpleWorkerService.sln
+        run: dotnet build --no-restore SimpleWorkerService.sln
 
       - name: "Run Unit Tests"
         id: unittest
