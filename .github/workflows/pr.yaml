@@ -28,7 +28,7 @@ jobs:
     - name: Check Code Format
       run: dotnet-format SimpleWorkerService.sln --check 
       
-  build-test:
+  run-tests:
     name: Run Tests Against Code
     runs-on: ubuntu-latest
     steps:
@@ -65,3 +65,28 @@ jobs:
         with:
           message: 'Unit tests failed'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+  scan-code:
+    name: "Scan Image"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: 'csharp'
+          
+      - name: "Restore dependencies"
+        run: dotnet restore
+
+      - name: "Build the App"
+        run: dotnet build --no-restore
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2 
