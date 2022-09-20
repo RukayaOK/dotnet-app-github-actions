@@ -11,7 +11,7 @@ env:
 jobs:
   check-code-formatting:
     runs-on: ubuntu-latest
-    name: Check code formating against editorconfig
+    name: Check code formating
 
     steps:
     - name: Checkout code
@@ -29,7 +29,7 @@ jobs:
       run: dotnet-format SimpleWorkerService.sln --check 
       
   build-test:
-    name: "Test Application"
+    name: Run Tests Against Code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
