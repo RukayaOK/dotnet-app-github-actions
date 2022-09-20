@@ -32,6 +32,9 @@ jobs:
           with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
        
+        - name: 'Print Working Directory'
+          run: pwd
+
        # Build and push image to container registry
         - name: 'Build and push image'
           uses: azure/docker-login@v1
