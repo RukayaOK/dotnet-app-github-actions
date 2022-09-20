@@ -11,7 +11,6 @@ env:
 jobs:
   build-test:
     name: "Test Application"
-    if: ${{env.TESTS_FOLDER}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
