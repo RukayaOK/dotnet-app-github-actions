@@ -9,6 +9,25 @@ env:
   TESTS_FOLDER: SimpleWorkerService.Tests
 
 jobs:
+  check-code-formatting:
+    runs-on: ubuntu-latest
+    name: Check code formating against editorconfig
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dotnet-format tool
+      run: dotnet tool install -g dotnet-format
+    
+    - name: Check Code Format
+      run: dotnet-format --check
+      
   build-test:
     name: "Test Application"
     runs-on: ubuntu-latest
