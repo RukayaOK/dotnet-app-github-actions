@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: 3.1.x
+  DOTNET_VERSION: 6.0.x
   WORKDIR: ./
   TESTS_FOLDER: SimpleWorkerService.Tests
 
@@ -24,12 +24,12 @@ jobs:
         run: dotnet restore SimpleWorkerService.sln
 
       - name: "Build the App"
-        run: dotnet build --no-restore SimpleWorkerService.sln
+        run: dotnet build -c Release --no-restore SimpleWorkerService.sln
 
       - name: "Run Unit Tests"
         id: unittest
         run: |
-          dotnet test --no-build SimpleWorkerService.Sln --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults
+          dotnet test -c Release --no-build SimpleWorkerService.Sln --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults
           
       - name: Test Report
         uses: dorny/test-reporter@v1
