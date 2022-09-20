@@ -32,6 +32,9 @@ jobs:
        
         - name: 'Print Working Directory'
           run: pwd
+        
+        - name: 'List Directory'
+          run: ls
 
        # Build and push image to container registry
         - name: 'Build and push image'
