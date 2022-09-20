@@ -26,7 +26,7 @@ jobs:
       run: dotnet tool install -g dotnet-format
     
     - name: Check Code Format
-      run: dotnet format --no-restore --verify-no-changes --exclude *.Generated.cs
+      run: dotnet format SimpleWorkerService
       
   run-tests:
     name: Run Tests Against Code
