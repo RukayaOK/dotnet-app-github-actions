@@ -29,7 +29,7 @@ jobs:
       - name: "Run Unit Tests"
         id: unittest
         run: |
-          dotnet test -c Release --no-build SimpleWorkerService.Sln --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults
+          dotnet test --no-build SimpleWorkerService.Sln --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults
           
       - name: Test Report
         uses: dorny/test-reporter@v1
