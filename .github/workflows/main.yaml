@@ -44,8 +44,8 @@ jobs:
             username: ${{ secrets.REGISTRY_USERNAME }}
             password: ${{ secrets.REGISTRY_PASSWORD }}
         - run: |
-            docker build -f SimpleWorkerService/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
-            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
+            docker build . -t v1sau:latest -f SimpleWorkerService/Dockerfile
+            docker push v1sau:latest
 
         # Deploy to a container instance
         - name: 'Deploy to Azure Container Instances'
