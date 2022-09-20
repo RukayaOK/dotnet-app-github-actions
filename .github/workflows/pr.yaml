@@ -37,7 +37,7 @@ jobs:
         with:
           fail-on-error: false
           name: Test Report           # Name of the check run which will be created
-          path: ${{ env.DOTNET_VERSION }}/TestResults/TestResults.trx    # Path to test results
+          path: ./TestResults/TestResults.trx    # Path to test results
           reporter: dotnet-trx        # Format of test results
             
       - name: If PR Then Comment on PR
