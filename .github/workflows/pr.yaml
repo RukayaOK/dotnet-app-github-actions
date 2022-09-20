@@ -21,16 +21,16 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: "Restore dependencies"
-        run: dotnet restore SimpleWorkerService
+        run: dotnet restore SimpleWorkerService.sln
 
       - name: "Build the App"
-        run: dotnet build --no-restore SimpleWorkerService
+        run: dotnet build --no-restore SimpleWorkerService.sln
 
       - name: "Run Unit Tests"
         id: unittest
         run: |
-          dotnet test --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults --no-build --filter "FullyQualifiedName~${{env.TESTS_FOLDER}}"
-      
+          dotnet test --no-build SimpleWorkerService.Sln --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults
+          
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # run this step even if previous step failed
