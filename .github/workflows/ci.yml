@@ -118,6 +118,7 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
+        cd build
         docker build . -f build/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
             
