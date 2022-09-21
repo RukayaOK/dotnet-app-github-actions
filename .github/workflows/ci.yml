@@ -52,10 +52,11 @@ jobs:
         path: format-results
     
     - name: Comment on PR
-      if: always() && steps.formatCheck.outcome == 'failure' && github.event_name == 'pull_request'
+      if: always() && github.event_name == 'pull_request'
       uses: actions/github-script@v6
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
+        run: echo hello
         script: |
           github.rest.issues.createComment({
             issue_number: context.issue.number,
