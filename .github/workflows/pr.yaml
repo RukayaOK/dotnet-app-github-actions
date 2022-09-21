@@ -13,6 +13,7 @@ env:
 
 jobs:
   build-debug:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Build Code
     
@@ -37,48 +38,9 @@ jobs:
         # Artifact name
         name: SimpleWorkerService #.zip will be added automatically
         path: .
-        
-    - name: Tree
-      run: tree
   
-  upload-artifact: 
-    if: ${{ false }}
-    runs-on: ubuntu-latest
-    name: Download Artificat Test
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    
-    - name: Tree
-      run: tree 
-    
-    - name: "Restore dependencies"
-      run: dotnet restore SimpleWorkerService.sln
-      
-    - name: "Build the App"
-      run: dotnet build --no-restore SimpleWorkerService.sln
-    
-    - name: Tree
-      run: tree 
-   
-    - name: List
-      run: ls 
-    
-    - name: PWD
-      run: pwd 
-      
-    - name: Upload the debug build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        # Artifact name
-        name: SimpleWorkerService #.zip will be added automatically
-        path: .
-    
-    - name: CD 
-      run: ls SimpleWorkerService/bin/Debug 
-      
   download-artifact:
+    if: ${{ false }}
     needs:
       - build-debug
     runs-on: ubuntu-latest
@@ -89,15 +51,36 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: SimpleWorkerService
-    
-    - name: Tree
-      run: tree
-        
-  check-code-formatting:
+  
+  download-dotnet-format:
     if: ${{ false }}
-    strategy:
-      matrix:
-        projects: [SimpleWorkerService]
+    runs-on: ubuntu-latest
+    name: Download dotnet format 
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dotnet-format tool
+      run: dotnet tool install -g dotnet-format
+    
+    - name: Upload the debug build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        # Artifact name
+        name: DotnetFormat
+        path: .
+      
+      
+  check-code-formatting:
+    #strategy:
+    #  matrix:
+    #    projects: [SimpleWorkerService]
         
     runs-on: ubuntu-latest
     name: Check code formating
@@ -115,7 +98,7 @@ jobs:
       run: dotnet tool install -g dotnet-format
     
     - name: Check Code Format
-      run: dotnet format ${{ matrix.projects }}
+      run: dotnet format SimpleWorkerService.sln
       
   run-tests:
     if: ${{ false }}
