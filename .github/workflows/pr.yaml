@@ -29,7 +29,7 @@ jobs:
       run: dotnet build --no-restore SimpleWorkerService.sln
     
     - name: Upload the debug build artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         # Artifact name
         name: SimpleWorkerService #.zip will be added automatically
@@ -48,18 +48,14 @@ jobs:
     - name: "List Directory"
       run: ls 
       
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: ApplicationArtifact
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
     
-    - name: "Run Tests"
-      id: tests
-      run: |
-        dotnet test --no-build SimpleWorkerService.Tests --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults 
-
+    - name: "List Directory"
+      run: ls 
         
   check-code-formatting:
+    if: ${{ false }}
     strategy:
       matrix:
         projects: [SimpleWorkerService]
@@ -83,6 +79,7 @@ jobs:
       run: dotnet format ${{ matrix.projects }}
       
   run-tests:
+    if: ${{ false }}
     name: Run Tests Against Code
     runs-on: ubuntu-latest
     steps:
@@ -121,6 +118,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
   scan-code:
+    if: ${{ false }}
     name: "Scan Image"
     runs-on: ubuntu-latest
     steps:
