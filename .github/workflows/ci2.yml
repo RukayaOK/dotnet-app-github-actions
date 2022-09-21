@@ -1,7 +1,5 @@
 name: build
-
 on: push
-
 jobs:
   job1:
     runs-on: ubuntu-latest
@@ -14,9 +12,6 @@ jobs:
     needs: job1
     runs-on: ubuntu-latest
     strategy:
-      matrix: 
-        mymatrix: ${{ fromJSON(needs.job1.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.job1.outputs.matrix) }}
     steps:
       - run: build
-      
-      - run: echo ${{ matrix.mymatrix.include }}
