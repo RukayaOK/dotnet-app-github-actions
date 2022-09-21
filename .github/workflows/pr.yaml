@@ -36,6 +36,8 @@ jobs:
         path: ./bin/debug/${{ env.DOTNET_VERSION }}/*.*
   
   download-artifact:
+    needs:
+      - build-debug
     runs-on: ubuntu-latest
     name: Download Artificat
     
