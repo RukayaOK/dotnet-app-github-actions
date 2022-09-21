@@ -3,7 +3,8 @@
 namespace SimpleWorkerService;
 
 public class Worker : BackgroundService
-{private readonly ILogger<Worker> _logger;
+{
+    private readonly ILogger<Worker> _logger;
     private HttpClient client;
     private readonly IConfiguration _config;
 
