@@ -15,7 +15,11 @@ on:
         - error
         - info
         - warn
-        
+        default: error
+  
+  pull_request: 
+    branches:
+      - main
 env:
   DOTNET_VERSION: 6.0.x
   TESTS_FOLDER: SimpleWorkerService.Tests
