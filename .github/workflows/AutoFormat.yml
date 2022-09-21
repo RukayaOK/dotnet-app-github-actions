@@ -1,5 +1,9 @@
 name: Format check on pull request
-on: pull_request
+on: 
+  pull_request:
+  
+  workflow_dispatch:
+  
 jobs:
   dotnet-format:
     runs-on: ubuntu-latest
