@@ -10,6 +10,7 @@ env:
 
 jobs:
   build-debug:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Build Code
     
@@ -38,9 +39,33 @@ jobs:
     - name: "List Directory"
       run: ls 
   
+  upload-artifact: 
+    runs-on: ubuntu-latest
+    name: Download Artificat Test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Tree
+      run: tree 
+    
+    - name: "Build the App"
+      run: dotnet build --no-restore SimpleWorkerService.sln
+    
+    - name: Tree
+      run: tree 
+      
+    - name: Upload the debug build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        # Artifact name
+        name: SimpleWorkerService #.zip will be added automatically
+        path: .SimpleWorkerService//bin/debug/6.0/*.*
+    
   download-artifact:
     needs:
-      - build-debug
+      - upload-artifact
     runs-on: ubuntu-latest
     name: Download Artificat
     
