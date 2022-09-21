@@ -7,7 +7,7 @@ on:
       some-input:
         required: true
         type: string
-        default: "{\"include\":[{\"path\":\"foo\",\"name\":\"Debug\"},{\"path\":\"bar\",\"name\":\"Release\"}]}"
+        default: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"Debug\"},{\"path\":\"bar\",\"name\":\"Release\"}]}"
         
 jobs:
   job1:
