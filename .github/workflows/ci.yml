@@ -108,6 +108,8 @@ jobs:
       
     - name: Build
       run: docker build . -f build/Dockerfile
+      env:
+        DOCKLE_HOST: "unix:///var/run/docker.sock"
         
    # Build and push image to container registry
     - name: 'Build and push image'
