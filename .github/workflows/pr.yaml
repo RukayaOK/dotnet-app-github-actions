@@ -58,13 +58,19 @@ jobs:
     
     - name: Tree
       run: tree 
+   
+    - name: List
+      run: ls 
+    
+    - name: PWD
+      run: pwd 
       
     - name: Upload the debug build artifact
       uses: actions/upload-artifact@v3
       with:
         # Artifact name
         name: SimpleWorkerService #.zip will be added automatically
-        path: .SimpleWorkerService//bin/debug/6.0/*.*
+        path: .SimpleWorkerService/bin/debug/6.0/*.*
     
   download-artifact:
     needs:
