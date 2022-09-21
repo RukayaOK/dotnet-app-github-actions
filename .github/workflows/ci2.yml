@@ -1,5 +1,14 @@
 name: build
-on: push
+on: 
+  push:
+  
+  workflow_call:
+    inputs:
+      some-input:
+        required: true
+        type: string
+        default: "{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+        
 jobs:
   job1:
     runs-on: ubuntu-latest
@@ -7,7 +16,10 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - id: set-matrix
-      run: echo "::set-output name=matrix::{"include":[{"project":"foo","config":"Debug"},{"project":"bar","config":"Release"}]}"
+      run: echo "::set-output name=matrix::$input"
+      env:
+          input: ${{ inputs.some-input }}
+          
   job2:
     needs: job1
     runs-on: ubuntu-latest
