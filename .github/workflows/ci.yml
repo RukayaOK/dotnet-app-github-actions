@@ -1,6 +1,10 @@
 name: CI
 
 on:
+  pull_request:
+    branches:
+      - main
+      
   workflow_dispatch:
     inputs:
       docker-images:
@@ -15,7 +19,8 @@ on:
         - error
         - info
         - warn
-        
+        default: error
+  
 env:
   DOTNET_VERSION: 6.0.x
   TESTS_FOLDER: SimpleWorkerService.Tests
@@ -31,6 +36,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ steps.pr_data.outputs.branch }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -44,15 +52,22 @@ jobs:
       id: formatCheck
       run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ inputs.format-severity }} --report format-results/format-issues.json
     
+    - name: If PR Then Comment on PR
+      if: failure() && github.event_name == 'pull_request'
+      uses: allthatjazzleo/actions-pull-request-add-comment@master
+      with:
+        message: 'yoyo🤙🏻'
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
     - name: Upload format issues 
-      if: always()
+      if: always() && github.event_name == 'pull_request'
       uses: actions/upload-artifact@v1
       with:
         name: results
         path: format-results
     
     - name: Add comment to PR
-      if: always() && github.event_name == 'pull_request'
+      if: always() 
       env:
         URL: ${{ github.event.issue.comments_url }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -63,13 +78,12 @@ jobs:
           -H "Content-Type: application/json" \
           -H "Authorization: token $GITHUB_TOKEN" \
           --data '{ "body": "blah blah" }'
-            
+          
     - name: Comment on PR
       if: always() && github.event_name == 'pull_request'
       uses: actions/github-script@v6
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
-        run: echo hello
         script: |
           github.rest.issues.createComment({
             issue_number: context.issue.number,
