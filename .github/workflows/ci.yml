@@ -12,6 +12,7 @@ on:
 env:
   DOTNET_VERSION: 6.0.x
   TESTS_FOLDER: SimpleWorkerService.Tests
+  SOLUTION_FILE: SimpleWorkerService.sln
   DOCKLE_HOST: "unix:///var/run/docker.sock" # for Azure/container-scan@v0 on ubuntu-latest
 
 jobs:
@@ -33,7 +34,7 @@ jobs:
       run: dotnet tool install -g dotnet-format
     
     - name: Check Code Format
-      run: dotnet format SimpleWorkerService.sln -v d
+      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes
       
   run-tests:
     name: Run Tests Against Code
@@ -47,14 +48,14 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: "Restore dependencies"
-        run: dotnet restore SimpleWorkerService.sln
+        run: dotnet restore ${{ env.SOLUTION_FILE }}
 
       - name: "Build the App"
-        run: dotnet build --no-restore SimpleWorkerService.sln
+        run: dotnet build --no-restore ${{ env.SOLUTION_FILE }}
 
       - name: "Run Tests"
         run: |
-          dotnet test --no-build SimpleWorkerService.Tests --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults 
+          dotnet test --no-build ${{ env.TESTS_FOLDER }} --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults 
       
       - name: Test Report
         uses: dorny/test-reporter@v1
