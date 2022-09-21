@@ -7,7 +7,7 @@ on:
       some-input:
         required: true
         type: string
-        default: "{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+        default: "{\"include\":[{\"path\":\"foo\",\"name\":\"Debug\"},{\"path\":\"bar\",\"name\":\"Release\"}]}"
         
 jobs:
   job1:
@@ -26,5 +26,5 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.job1.outputs.matrix)}}
     steps:
-    - run: echo ${{ matrix.project }}
-    - run: echo ${{ matrix.config }}
+    - run: echo ${{ matrix.path }}
+    - run: echo ${{ matrix.name }}
