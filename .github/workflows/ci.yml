@@ -31,9 +31,11 @@ jobs:
     needs: job1
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJSON(needs.job1.outputs.matrix) }}
+      matrix: 
+        testing: ${{ fromJSON(needs.job1.outputs.matrix) }}
     steps:
-      - run: build
+      - name: matrix test 
+        run: echo ${{ matrix.testing.include }}
           
   check-code-formatting:
     runs-on: ubuntu-latest
