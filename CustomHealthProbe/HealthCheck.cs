@@ -1,9 +1,9 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 
-namespace CustomHealthProbe 
+namespace CustomHealthProbe
 {
     public class CustomHealthCheck : IHealthCheck
     {
@@ -15,4 +15,3 @@ namespace CustomHealthProbe
         }
     }
 }
-
