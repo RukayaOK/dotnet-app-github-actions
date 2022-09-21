@@ -1,42 +1,20 @@
 name: CI
 
 on:
-  pull_request:
-    branches:
-    - main
   workflow_dispatch:
     inputs:
-      product:
-        description: "Product"
-        default: '[{"path":"build/Dockerfile","name":"simpleworkerservice"}]'
-      limit:
-        description: "Limit"
-        default: "50"
-
+      docker-images:
+        required: true
+        type: string
+        default: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"},{\"path\":\"Dockerfile\",\"name\":\"simpleworkservice2\"}]}"
+        
 env:
   DOTNET_VERSION: 6.0.x
   TESTS_FOLDER: SimpleWorkerService.Tests
   DOCKLE_HOST: "unix:///var/run/docker.sock"
 
 jobs:
-
-  job1:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - id: set-matrix
-        run: echo "::set-output name=matrix::{\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
-  job2:
-    needs: job1
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: 
-        testing: ${{ fromJSON(needs.job1.outputs.matrix) }}
-    steps:
-      - name: matrix test 
-        run: echo ${{ matrix.testing.include }}
-          
+      
   check-code-formatting:
     runs-on: ubuntu-latest
     name: Check code formating
@@ -112,23 +90,35 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2  
   
+  
+  prepare-scan-image-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - id: set-matrix
+      run: echo "::set-output name=matrix::$input"
+      env:
+          input: ${{ inputs.docker-images }}
+          
   scan-image:
+    needs:
+      - prepare-scan-image-matrix
     name: "Scan Image"
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        dockerimage: [ { "path": "build/Dockerfile", "name": "simpleworkerservice" } ]
+      matrix: ${{fromJson(needs.prepare-scan-image-matrix.outputs.matrix)}}
     
     steps:
       - uses: actions/checkout@v2
 
       - name: Build image
         run: |
-          docker build . -f ${{ matrix.dockerimage.path }} -t ${{ matrix.dockerimage.name }}:${{ github.sha }}
+          docker build . -f ${{ matrix.path }} -t ${{ matrix.name }}:${{ github.sha }}
 
       - name: Scan image
         uses: Azure/container-scan@v0
         with:
-          image-name: ${{ matrix.dockerimage.name }}:${{ github.sha }}
+          image-name: ${{ matrix.path }}:${{ github.sha }}
           severity-threshold: CRITICAL
           run-quality-checks: true  
