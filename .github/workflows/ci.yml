@@ -41,9 +41,30 @@ jobs:
       run: dotnet tool install -g dotnet-format
     
     - name: Check Code Format
-      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ inputs.format-severity }}
-      
+      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ inputs.format-severity }} --report format-results/format-issues.json
+    
+    - name: Upload format issues 
+      if: always()
+      uses: actions/upload-artifact@v1
+      with:
+        name: results
+        path: format-results
+    
+    - name: Comment on PR
+      if: failure() && github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'Please change PR Title!!'
+          })
+          
   run-tests:
+    if: ${{ false }} 
     name: Run Tests Against Code
     runs-on: ubuntu-latest
     steps:
@@ -75,6 +96,7 @@ jobs:
             
     
   scan-code:
+    if: ${{ false }} 
     name: Scan Code
     runs-on: ubuntu-latest
     steps:
@@ -101,6 +123,7 @@ jobs:
   
   
   prepare-container-image-scan:
+    if: ${{ false }} 
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
@@ -112,6 +135,7 @@ jobs:
           input: ${{ inputs.docker-images }}
           
   scan-container-image:
+    if: ${{ false }} 
     needs:
       - prepare-container-image-scan
     name: "Scan Container Image"
