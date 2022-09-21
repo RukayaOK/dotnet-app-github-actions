@@ -107,8 +107,7 @@ jobs:
       run: tree 
       
     - name: Build
-      working-directory: build
-      run: docker build . 
+      run: docker build . -f build/Dockerfile
         
    # Build and push image to container registry
     - name: 'Build and push image'
