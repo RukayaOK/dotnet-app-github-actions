@@ -12,8 +12,6 @@ on:
       limit:
         description: "Limit"
         default: "50"
-      dockerimages:
-        description: Array of maps [ { "path": "build/Dockerfile", "name": "simpleworkerservice" }, ]
 
 env:
   DOTNET_VERSION: 6.0.x
