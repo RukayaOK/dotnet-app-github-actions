@@ -35,7 +35,26 @@ jobs:
         name: ApplicationArtifact #.zip will be added automatically
         path: ./bin/debug/${{ env.DOTNET_VERSION }}/*.*
   
-  
+  download-artifact:
+    runs-on: ubuntu-latest
+    name: Download Artificat
+    
+    steps:
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: ApplicationArtifact
+        path: .
+    
+    - name: "List Directory"
+      run: ls 
+      
+    - name: "Run Tests"
+      id: tests
+      run: |
+        dotnet test --no-build SimpleWorkerService.Tests --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults 
+
+        
   check-code-formatting:
     strategy:
       matrix:
