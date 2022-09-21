@@ -1,166 +1,60 @@
-name: CI
-
 on:
-  push: 
-    branches:
-    - main
   workflow_dispatch:
+  #   inputs:
+  #     logLevel:
+  #       description: 'Log level'     
+  #       required: true
+  #       default: 'Information'
+
+name: SimpleWorkerService
 
 env:
-  DOTNET_VERSION: 6.0.x
-  WORKDIR: ./
-  TESTS_FOLDER: SimpleWorkerService.Tests
+  SecretPassword: ${{ secrets.SECRETPASSWORD }}
+  Logging__LogLevel__Microsoft: ${{ github.event.inputs.logLevel }}
+  location: uk south
+  containerName: simpleworkerservice
+
 
 jobs:
-  build-debug:
-    if: ${{ false }}
-    runs-on: ubuntu-latest
-    name: Build Code
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        steps:
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    
-    - name: "Restore dependencies"
-      run: dotnet restore SimpleWorkerService.sln
-
-    - name: "Build the App"
-      run: dotnet build --no-restore SimpleWorkerService.sln
-    
-    - name: Upload the debug build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        # Artifact name
-        name: SimpleWorkerService #.zip will be added automatically
-        path: .
-  
-  download-artifact:
-    if: ${{ false }}
-    needs:
-      - build-debug
-    runs-on: ubuntu-latest
-    name: Download Artificat
-    
-    steps:
-    - name: Download all workflow run artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: SimpleWorkerService
-  
-  download-dotnet-format:
-    if: ${{ false }}
-    runs-on: ubuntu-latest
-    name: Download dotnet format 
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Install dotnet-format tool
-      run: dotnet tool install -g dotnet-format
-    
-    - name: Upload the debug build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        # Artifact name
-        name: DotnetFormat
-        path: .
-      
-      
-  check-code-formatting:
-    #strategy:
-    #  matrix:
-    #    projects: [SimpleWorkerService]
+        # Checkout the Repository
+        - name: 'Checkout GitHub Action'
+          uses: actions/checkout@main
         
-    runs-on: ubuntu-latest
-    name: Check code formating
+        # login to Azure CLI
+        - name: 'Login via Azure CLI'
+          uses: azure/login@v1
+          with:
+            creds: ${{ secrets.AZURE_CREDENTIALS }}
+       
+        - name: 'Print Working Directory'
+          run: pwd
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Install dotnet-format tool
-      run: dotnet tool install -g dotnet-format
-    
-    - name: Check Code Format
-      run: dotnet format SimpleWorkerService.sln
-      
-  run-tests:
-    if: ${{ false }}
-    name: Run Tests Against Code
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: "Restore dependencies"
-        run: dotnet restore SimpleWorkerService.sln
-
-      - name: "Build the App"
-        run: dotnet build --no-restore SimpleWorkerService.sln
-
-      - name: "Run Unit Tests"
-        id: unittest
-        run: |
-          dotnet test --no-build SimpleWorkerService.Tests --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults 
-      
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
-        with:
-          fail-on-error: false
-          name: Test Report           # Name of the check run which will be created
-          path: ./TestResults/TestResults.trx    # Path to test results
-          reporter: dotnet-trx        # Format of test results
-            
-      - name: If PR Then Comment on PR
-        if: failure() && github.event_name == 'pull_request'
-        uses: allthatjazzleo/actions-pull-request-add-comment@master
-        with:
-          message: 'Unit tests failed'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-  scan-code:
-    if: ${{ false }}
-    name: "Scan Image"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: 'csharp'
-          
-      - name: "Restore dependencies"
-        run: dotnet restore
-
-      - name: "Build the App"
-        run: dotnet build --no-restore
-      
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2 
+       # Build and push image to container registry
+        - name: 'Build and push image'
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            username: ${{ secrets.REGISTRY_USERNAME }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
+        - run: |
+            docker build . -f SimpleWorkerService/Dockerfile -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
+        # Deploy to a container instance
+        - name: 'Deploy to Azure Container Instances'
+          uses: 'azure/aci-deploy@v1'
+          with:
+            resource-group: ${{ secrets.RESOURCE_GROUP }}
+            dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+            image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/simpleworkerservice:${{ github.sha }}
+            registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            registry-username: ${{ secrets.REGISTRY_USERNAME }}
+            registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+            name: aci-simpleworkerservice
+            environment-variables: Logging__LogLevel__Microsoft=${{env.LOGGINGLEVELS}}
+            secure-environment-variables: SecretPassword=$${{ secrets.SECRETPASSWORD }}
+            location: ${{env.LOCATION}}
+        
