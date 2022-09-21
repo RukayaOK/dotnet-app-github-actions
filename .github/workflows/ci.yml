@@ -63,7 +63,7 @@ jobs:
             
     
   scan-code:
-    name: "Scan Image"
+    name: "Scan Code"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -85,4 +85,38 @@ jobs:
         run: dotnet build --no-restore
       
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2 
+        uses: github/codeql-action/analyze@v2
+  
+  foo1:
+    runs-on: ${{ matrix.os[0] }}
+    strategy:
+      matrix:
+        os: [[ubuntu-20.04, 3.8], [ubuntu-18.04, 3.7]]
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.os[1] }}
+      - name: Print Python Version
+        run: python --version
+        
+  scan-image:
+    name: "Scan Image"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerimage: [ { "path": "SimpleWorkerService/Dockerfile", "dockerimage": "simpleworkerservice" } ]
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: |
+          docker build . -f ${{ matrix.dockerimage.path }} -t ${{ matrix.dockerimage.name }}:${{ github.sha }}
+
+      - name: Scan image
+        uses: Azure/container-scan@v0
+        with:
+          image-name: ${{ matrix.dockerimage.name }}:${{ github.sha }}
+          severity-threshold: CRITICAL
+          run-quality-checks: true  
