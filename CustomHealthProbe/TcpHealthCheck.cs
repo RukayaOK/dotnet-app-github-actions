@@ -12,8 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace CustomHealthProbe;
 
     public sealed class TcpHealthProbeService : BackgroundService
-    {
-        private readonly HealthCheckService _healthCheckService;
+    {private readonly HealthCheckService _healthCheckService;
         private readonly TcpListener _listener;
         private readonly ILogger<TcpHealthProbeService> _logger;
         private readonly IConfiguration _config; // makes available to all methods
