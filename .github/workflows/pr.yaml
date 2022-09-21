@@ -70,8 +70,11 @@ jobs:
       with:
         # Artifact name
         name: SimpleWorkerService #.zip will be added automatically
-        path: ./SimpleWorkerService/bin/debug/6.0/*.*
+        path: SimpleWorkerService/bin/debug/6.0/*.*
     
+    - name: CD 
+      run: ls  ./SimpleWorkerService/bin/debug/6.0/ 
+      
   download-artifact:
     needs:
       - upload-artifact
