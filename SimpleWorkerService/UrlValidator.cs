@@ -7,8 +7,7 @@ namespace URLValidation
     {
 
         public static bool IsValid(string url)
-        {
-            if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
+        {if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {
                 return true;
             }
