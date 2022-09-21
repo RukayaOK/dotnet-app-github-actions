@@ -86,26 +86,13 @@ jobs:
       
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
-  
-  foo1:
-    runs-on: ${{ matrix.os[0] }}
-    strategy:
-      matrix:
-        os: [[ubuntu-20.04, 3.8], [ubuntu-18.04, 3.7]]
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.os[1] }}
-      - name: Print Python Version
-        run: python --version
         
   scan-image:
     name: "Scan Image"
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dockerimage: [ { "path": "SimpleWorkerService/Dockerfile", "name": "simpleworkerservice" } ]
+        dockerimage: [ { "path": "build/Dockerfile", "name": "simpleworkerservice" } ]
     
     steps:
       - uses: actions/checkout@v2
