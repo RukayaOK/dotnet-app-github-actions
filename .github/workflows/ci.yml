@@ -12,7 +12,7 @@ on:
 env:
   DOTNET_VERSION: 6.0.x
   TESTS_FOLDER: SimpleWorkerService.Tests
-  DOCKLE_HOST: "unix:///var/run/docker.sock"
+  DOCKLE_HOST: "unix:///var/run/docker.sock" # for Azure/container-scan@v0 on ubuntu-latest
 
 jobs:
       
@@ -34,17 +34,6 @@ jobs:
     
     - name: Check Code Format
       run: dotnet format SimpleWorkerService.sln -v d
-  
-  format-two:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      - uses: xt0rted/dotnet-format-problem-matcher@v1
-      - run: dotnet tool install -g dotnet-format
-      - run: dotnet-format --dry-run
       
   run-tests:
     name: Run Tests Against Code
@@ -132,6 +121,6 @@ jobs:
       - name: Scan image
         uses: Azure/container-scan@v0
         with:
-          image-name: ${{ matrix.path }}:${{ github.sha }}
+          image-name: ${{ matrix.name }}:${{ github.sha }}
           severity-threshold: CRITICAL
           run-quality-checks: true  
