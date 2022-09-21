@@ -13,7 +13,6 @@ env:
 
 jobs:
   build-debug:
-    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Build Code
     
