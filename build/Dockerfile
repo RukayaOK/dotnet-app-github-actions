@@ -55,13 +55,13 @@ FROM build as buildservice
 
 WORKDIR /app
 
-COPY ["../SimpleWorkerService/SimpleWorkerService.csproj", "SimpleWorkerService/"]
-COPY ["../CustomHealthProbe/CustomHealthProbe.csproj", "CustomHealthProbe/"]
+COPY ["./SimpleWorkerService/SimpleWorkerService.csproj", "SimpleWorkerService/"]
+COPY ["./CustomHealthProbe/CustomHealthProbe.csproj", "CustomHealthProbe/"]
 RUN dotnet restore "SimpleWorkerService/SimpleWorkerService.csproj"
 
 # copy and build app and libraries
-COPY ["../SimpleWorkerService", "SimpleWorkerService/"]
-COPY ["../CustomHealthProbe", "CustomHealthProbe/"]
+COPY ["./SimpleWorkerService", "SimpleWorkerService/"]
+COPY ["./CustomHealthProbe", "CustomHealthProbe/"]
 WORKDIR /app/SimpleWorkerService
 RUN dotnet build "SimpleWorkerService.csproj" -c Release -o /app/build
 
@@ -73,9 +73,9 @@ FROM buildservice AS runtests
 
 WORKDIR /app
 
-COPY ["../SimpleWorkerService.Tests/SimpleWorkerService.Tests.csproj", "SimpleWorkerService.Tests/"]
+COPY ["./SimpleWorkerService.Tests/SimpleWorkerService.Tests.csproj", "SimpleWorkerService.Tests/"]
 RUN dotnet restore "SimpleWorkerService.Tests/SimpleWorkerService.Tests.csproj"
-COPY ["../SimpleWorkerService.Tests", "SimpleWorkerService.Tests/"]
+COPY ["./SimpleWorkerService.Tests", "SimpleWorkerService.Tests/"]
 WORKDIR /app/SimpleWorkerService.Tests
 RUN dotnet build --no-restore "SimpleWorkerService.Tests.csproj" 
 
