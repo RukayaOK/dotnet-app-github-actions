@@ -6,7 +6,8 @@ on:
       docker-images:
         required: true
         type: string
-        default: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"},{\"path\":\"Dockerfile\",\"name\":\"simpleworkservice2\"}]}"
+        description: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"},{\"path\":\"Dockerfile\",\"name\":\"simpleworkservice2\"}]}"
+        default: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}"
         
 env:
   DOTNET_VERSION: 6.0.x
