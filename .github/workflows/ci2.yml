@@ -13,6 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: 
-        image: ${{ fromJSON(needs.job1.outputs.matrix) }}
+        dockerimage: ${{ fromJSON(needs.job1.outputs.matrix) }}
     steps:
-      - run: echo hello
+      - run: build
