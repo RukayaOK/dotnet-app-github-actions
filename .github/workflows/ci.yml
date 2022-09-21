@@ -62,7 +62,7 @@ jobs:
           reporter: dotnet-trx        # Format of test results
             
       - name: If PR Then Comment on PR
-        if: failure() && github.event_name == 'pull_request'
+        # if: failure() && github.event_name == 'pull_request'
         uses: allthatjazzleo/actions-pull-request-add-comment@master
         with:
           message: 'Unit tests failed'
