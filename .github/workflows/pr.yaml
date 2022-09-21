@@ -9,10 +9,37 @@ env:
   TESTS_FOLDER: SimpleWorkerService.Tests
 
 jobs:
+  build-debug:
+    runs-on: ubuntu-latest
+    name: Build Code
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: "Restore dependencies"
+      run: dotnet restore SimpleWorkerService.sln
+
+    - name: "Build the App"
+      run: dotnet build --no-restore SimpleWorkerService.sln
+    
+    - name: Upload the debug build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        # Artifact name
+        name: ApplicationArtifact #.zip will be added automatically
+        path: ./bin/debug/${{ env.DOTNET_VERSION }}/*.*
+  
+  
   check-code-formatting:
     strategy:
       matrix:
-        projects: [SimpleWorkerService, SimpleWorkerService.Tests, CustomHealthProbe]
+        projects: [SimpleWorkerService]
         
     runs-on: ubuntu-latest
     name: Check code formating
