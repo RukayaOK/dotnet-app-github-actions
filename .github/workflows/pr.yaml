@@ -10,6 +10,10 @@ env:
 
 jobs:
   check-code-formatting:
+    strategy:
+      matrix:
+        projects: [SimpleWorkerService, SimpleWorkerService.Tests, CustomHealthProbe]
+        
     runs-on: ubuntu-latest
     name: Check code formating
 
@@ -20,13 +24,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '6.0.102'
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Install dotnet-format tool
       run: dotnet tool install -g dotnet-format
     
     - name: Check Code Format
-      run: dotnet format SimpleWorkerService
+      run: dotnet format ${{ matrix.projects }}
       
   run-tests:
     name: Run Tests Against Code
