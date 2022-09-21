@@ -73,7 +73,7 @@ jobs:
         path: .
     
     - name: CD 
-      run: ls SimpleWorkerService 
+      run: ls SimpleWorkerService/bin 
       
   download-artifact:
     needs:
