@@ -31,6 +31,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ steps.pr_data.outputs.branch }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
