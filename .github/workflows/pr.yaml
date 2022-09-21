@@ -50,6 +50,9 @@ jobs:
     - name: Tree
       run: tree 
     
+    - name: "Restore dependencies"
+      run: dotnet restore SimpleWorkerService.sln
+      
     - name: "Build the App"
       run: dotnet build --no-restore SimpleWorkerService.sln
     
@@ -71,13 +74,13 @@ jobs:
     
     steps:
     - name: "List Directory"
-      run: ls 
+      run: tree
       
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v3
     
     - name: "List Directory"
-      run: ls 
+      run: tree 
         
   check-code-formatting:
     if: ${{ false }}
