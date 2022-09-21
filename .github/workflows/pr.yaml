@@ -32,8 +32,11 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         # Artifact name
-        name: ApplicationArtifact #.zip will be added automatically
+        name: SimpleWorkerService #.zip will be added automatically
         path: ./bin/debug/${{ env.DOTNET_VERSION }}/*.*
+    
+    - name: "List Directory"
+      run: ls 
   
   download-artifact:
     needs:
@@ -42,15 +45,14 @@ jobs:
     name: Download Artificat
     
     steps:
+    - name: "List Directory"
+      run: ls 
+      
     - name: Download a Build Artifact
       uses: actions/download-artifact@v2
       with:
         name: ApplicationArtifact
-        path: .
     
-    - name: "List Directory"
-      run: ls 
-      
     - name: "Run Tests"
       id: tests
       run: |
