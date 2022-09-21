@@ -1,6 +1,10 @@
 name: CI
 
 on:
+  pull_request:
+    branches:
+      - main
+      
   workflow_dispatch:
     inputs:
       docker-images:
@@ -16,8 +20,6 @@ on:
         - info
         - warn
         default: error
-  
-  pull_request:
   
 env:
   DOTNET_VERSION: 6.0.x
