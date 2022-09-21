@@ -7,7 +7,7 @@ on:
         required: true
         type: string
         description: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"},{\"path\":\"Dockerfile\",\"name\":\"simpleworkservice2\"}]}"
-        default: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}"
+        default: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}]}"
         
 env:
   DOTNET_VERSION: 6.0.x
