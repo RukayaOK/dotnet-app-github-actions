@@ -92,7 +92,8 @@ jobs:
         uses: github/codeql-action/analyze@v2  
   
   
-  prepare-scan-image-matrix:
+  prepare-container-image-scan:
+    name: "Prepare Image Scan"
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -102,13 +103,13 @@ jobs:
       env:
           input: ${{ inputs.docker-images }}
           
-  scan-image:
+  scan-container-image:
     needs:
-      - prepare-scan-image-matrix
-    name: "Scan Image"
+      - prepare-container-image-scan
+    name: "Scan Container Image"
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJson(needs.prepare-scan-image-matrix.outputs.matrix)}}
+      matrix: ${{fromJson(needs.prepare-container-image-scan.outputs.matrix)}}
     
     steps:
       - uses: actions/checkout@v2
