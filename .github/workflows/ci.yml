@@ -51,6 +51,19 @@ jobs:
         name: results
         path: format-results
     
+    - name: Add comment to PR
+      if: always() && github.event_name == 'pull_request'
+      env:
+        URL: ${{ github.event.issue.comments_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl \
+          -X POST \
+          $URL \
+          -H "Content-Type: application/json" \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          --data '{ "body": "blah blah" }'
+            
     - name: Comment on PR
       if: always() && github.event_name == 'pull_request'
       uses: actions/github-script@v6
