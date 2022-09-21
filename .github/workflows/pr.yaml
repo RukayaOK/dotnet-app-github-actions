@@ -37,12 +37,13 @@ jobs:
       with:
         # Artifact name
         name: SimpleWorkerService #.zip will be added automatically
-        path: ./bin/debug/${{ env.DOTNET_VERSION }}/*.*
-    
-    - name: "List Directory"
-      run: ls 
+        path: .
+        
+    - name: Tree
+      run: tree
   
   upload-artifact: 
+    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Download Artificat Test
     
@@ -80,21 +81,18 @@ jobs:
       
   download-artifact:
     needs:
-      - upload-artifact
+      - build-debug
     runs-on: ubuntu-latest
     name: Download Artificat
     
     steps:
-    - name: "List Directory"
-      run: tree
-      
     - name: Download all workflow run artifacts
       uses: actions/download-artifact@v3
       with:
         name: SimpleWorkerService
     
-    - name: "List Directory"
-      run: tree 
+    - name: Tree
+      run: tree
         
   check-code-formatting:
     if: ${{ false }}
