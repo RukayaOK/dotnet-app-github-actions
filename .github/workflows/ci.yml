@@ -93,7 +93,7 @@ jobs:
   
   
   prepare-container-image-scan:
-    name: "Prepare Image Scan"
+    name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
