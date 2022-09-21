@@ -19,7 +19,7 @@ jobs:
       
   check-code-formatting:
     runs-on: ubuntu-latest
-    name: Check code formating
+    name: Check Code Format
 
     steps:
     - name: Checkout code
@@ -68,7 +68,7 @@ jobs:
             
     
   scan-code:
-    name: "Scan Code"
+    name: Scan Code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
