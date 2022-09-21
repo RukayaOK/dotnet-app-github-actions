@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dockerimage: [ { "path": "SimpleWorkerService/Dockerfile", "dockerimage": "simpleworkerservice" } ]
+        dockerimage: [ { "path": "SimpleWorkerService/Dockerfile", "name": "simpleworkerservice" } ]
     
     steps:
       - uses: actions/checkout@v2
