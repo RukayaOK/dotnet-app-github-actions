@@ -5,6 +5,15 @@ on:
     branches:
     - main
   workflow_dispatch:
+    inputs:
+      product:
+        description: "Product"
+        default: "yellow"
+      limit:
+        description: "Limit"
+        default: "50"
+      dockerimages:
+        description: Array of maps [ { "path": "build/Dockerfile", "name": "simpleworkerservice" }, ]
 
 env:
   DOTNET_VERSION: 6.0.x
