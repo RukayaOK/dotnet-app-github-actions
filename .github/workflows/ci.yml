@@ -45,7 +45,7 @@ jobs:
       run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ inputs.format-severity }} --report format-results/format-issues.json
     
     - name: Upload format issues 
-      if: always()
+      if: always() && github.event_name == 'pull_request'
       uses: actions/upload-artifact@v1
       with:
         name: results
