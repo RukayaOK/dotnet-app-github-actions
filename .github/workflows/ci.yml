@@ -90,6 +90,7 @@ jobs:
       if: failure() && github.event_name == 'pull_request'
       run: |
         content=$(cat format-results/format-issues.json)
+        content=$(echo $content | jq -R .)
         # reading multi-line json file
         content="${content//'%'/'%25'}"
         content="${content//$'\n'/'%0A'}"
