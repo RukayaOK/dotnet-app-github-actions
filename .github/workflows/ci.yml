@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  pull_request:
-    branches:
-      - main
+  #pull_request:
+  #  branches:
+  #    - main
       
   workflow_dispatch:
     inputs:
@@ -40,6 +40,7 @@ env:
 jobs:
   
   set-default-values:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Set default values
     
@@ -51,18 +52,36 @@ jobs:
       - name: Set the values
         id: set_defaults
         run: |
-          INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
-          DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
-          echo "::set-output name=docker_image::$DOCKER_IMAGES"
+          if [ -z "${{ github.event.inputs.docker-images }}" ]; then
+              echo "${{ env.DEFAULT_DOCKER_IMAGES }}"
+              echo '::set-output name=docker_image::"${{ env.DEFAULT_DOCKER_IMAGES }}"'
+          else
+              echo "${{ github.event.inputs.docker-images }}"
+              echo '::set-output name=docker_image::"${{ github.event.inputs.docker-images }}"'
+          fi
+          
+          # INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
+          # DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          # echo "::set-output name=docker_image::$DOCKER_IMAGES"
+          
+          echo 1
+          echo $INPUT_DOCKER_IMAGES
+          echo 2
+          echo ${{ env.DEFAULT_DOCKER_IMAGES }}
+          echo 3
+          echo $DOCKER_IMAGES
+          echo 4
           
           INPUT_FORMAT_SEVERITY=${{ github.event.inputs.docker-images }}
           FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}
           echo "::set-output name=format_severity::$FORMAT_SEVERITY"
+          
+      - name: outputs
+        run: echo "${{ steps.set_defaults.outputs.docker_image }}" && echo ${{ steps.set_defaults.outputs.docker_image }}
+        
     
   check-code-formatting:
     if: ${{ false }}
-    needs:
-      - set-default-values
     runs-on: ubuntu-latest
     name: Check Code Format
     
@@ -83,7 +102,7 @@ jobs:
     
     - name: Check Code Format
       id: formatCheck
-      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ needs.set-default-values.outputs.format_severity }} --report format-results/format-issues.json
+      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ github.event.inputs.docker-images }} --report format-results/format-issues.json
    
     - name: Render Pull Request Comment
       if: failure() && github.event_name == 'pull_request'
@@ -166,21 +185,16 @@ jobs:
         uses: github/codeql-action/analyze@v2  
   
   
-  prepare-container-image-scan: 
-    needs:
-      - set-default-values
+  prepare-container-image-scan:
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
-    
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-    
     steps:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          # input: ${{ inputs.docker-images }}
-          input: ${{ needs.set-default-values.outputs.docker_image }}
+          input: ${{ github.event.inputs.docker-images }}
           
   scan-container-image:
     needs:
@@ -196,10 +210,9 @@ jobs:
       - name: Build image
         run: |
           docker build . -f ${{ matrix.path }} -t ${{ matrix.name }}:${{ github.sha }}
-
       - name: Scan image
         uses: Azure/container-scan@v0
         with:
           image-name: ${{ matrix.name }}:${{ github.sha }}
           severity-threshold: CRITICAL
-          run-quality-checks: true  
+          run-quality-checks: true 

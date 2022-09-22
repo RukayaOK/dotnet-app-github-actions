@@ -67,6 +67,8 @@ This application should be run inside a docker container.
 ---
 ## Project Maintainence 
 
+@RukayaOK
+
 [List of contributors](./documentation/CONTRIBUTORS.md)
 
 [Maintenance](./documentation/MAINTENANCE.md)
