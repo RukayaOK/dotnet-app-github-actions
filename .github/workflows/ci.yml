@@ -111,6 +111,19 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         path: format-results/format-issues.json
+   
+    - name: Comment on PR 1
+      if: failure() && github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            message: File.read(file_path)
+          })
           
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
@@ -122,7 +135,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: '${{ steps.format_results.outputs.packageJson }}'
+            body: File.read(file_path)
           })
           
   run-tests:
