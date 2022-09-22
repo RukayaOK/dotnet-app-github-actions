@@ -116,7 +116,7 @@ jobs:
       if: failure() && github.event_name == 'pull_request'
       id: new_pr
       run: |
-        VAR="Format"
+        VAR="Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
         echo $VAR
         
         echo "::set-output name=packageJsonnew::$VAR"
