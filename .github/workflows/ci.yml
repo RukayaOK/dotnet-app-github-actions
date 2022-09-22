@@ -83,49 +83,15 @@ jobs:
     - name: Check Code Format
       id: formatCheck
       run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ needs.set-default-values.outputs.format_severity }} --report format-results/format-issues.json
-        
-    # https://github.com/actions/upload-artifact/issues/50
-    - name: Get Code Format Results
-      id: format_results
-      if: failure() && github.event_name == 'pull_request'
-      run: |
-        # content=$(cat format-results/format-issues.json)
-        # content=$(echo $content | jq -R .)
-        content=$(jq '.' format-results/format-issues.json | jq -sR '.')
-        # reading multi-line json file
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
-        # finished reading multi-line json file
-        echo "::set-output name=packageJson::$content"
-          
-    - name: Output 
-      if: failure() && github.event_name != 'pull_request'
-      run: |
-        echo "${{ steps.format_results.outputs.packageJson }}"
    
-    - name: PR comment new
+    - name: Render Pull Request Comment
       if: failure() && github.event_name == 'pull_request'
-      id: new_pr
+      id: pull_request_comment
       run: |
-        VAR="Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-        
-        VAR="Workflow name: ${{ github.workflow }} \n Action: ${{ github.event_name }} \n Job: ${{ github.job }} \n PR: #${{ github.event.number }} \nFormat Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n Pusher: @${{ github.actor }}"
-        
-        # reading multi-line json file
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
-        # finished reading multi-line json file
-        echo "::set-output name=packageJson::$content"
-        
-        echo $content
-        
-        echo "::set-output name=packageJsonnew::$VAR"
-        echo "::set-output name=packageJsonsql::$VAR"
-        
-          
-    - name: Comment on PR
+        PULL_REQUEST_COMMENT="Workflow name: ${{ github.workflow }} \n Action: ${{ github.event_name }} \n Job: ${{ github.job }} \n PR: #${{ github.event.number }} \nFormat Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n Pusher: @${{ github.actor }}"
+        echo "::set-output name=pull_request_comment::$PULL_REQUEST_COMMENT"
+         
+    - name: Comment on Pull Request
       if: failure() && github.event_name == 'pull_request'
       uses: actions/github-script@v6
       with:
@@ -135,7 +101,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: "${{ steps.new_pr.outputs.packageJsonsql }}"
+            body: "${{ steps.pull_request_comment.outputs.pull_request_comment }}"
           })
           
   run-tests:
