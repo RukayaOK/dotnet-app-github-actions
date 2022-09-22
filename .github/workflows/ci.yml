@@ -86,15 +86,7 @@ jobs:
         
     # https://github.com/actions/upload-artifact/issues/50
     - name: Get Code Format Results
-      if: failure() && github.event_name == 'pull_request'
       id: format_results
-      run: |
-        FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)
-        echo "::set-output name=format_results::$FORMAT_ISSUES_REPORT"
-        echo $FORMAT_ISSUES_REPORT
-    
-    - name: Set the values
-      id: set_defaultstwo
       if: failure() && github.event_name == 'pull_request'
       run: |
         content=$(cat format-results/format-issues.json)
@@ -105,11 +97,10 @@ jobs:
         # finished reading multi-line json file
         echo "::set-output name=packageJson::$content"
           
-          
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
       run: |
-        echo "${{ steps.set_defaultstwo.outputs.packageJson }}"
+        echo "${{ steps.format_results.outputs.packageJson }}"
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
@@ -121,7 +112,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Please change PR Title!!'
+            body: 'Please change PR Title!! \n "${{ steps.format_results.outputs.packageJson }}"'
           })
           
   run-tests:
