@@ -167,7 +167,6 @@ jobs:
   
   
   prepare-container-image-scan: 
-    if: ${{ false }} 
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
