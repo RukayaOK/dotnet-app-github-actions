@@ -53,10 +53,10 @@ jobs:
         run: |
           if [ -z "${{ github.event.inputs.docker-images }}" ]; then
               echo "${{ env.DEFAULT_DOCKER_IMAGES }}"
-              echo "::set-output name=docker_image::${{ env.DEFAULT_DOCKER_IMAGES }}"
+              echo '::set-output name=docker_image::"${{ env.DEFAULT_DOCKER_IMAGES }}"'
           else
               echo "${{ github.event.inputs.docker-images }}"
-              echo "::set-output name=docker_image::${{ github.event.inputs.docker-images }}"
+              echo '::set-output name=docker_image::"${{ github.event.inputs.docker-images }}"'
           fi
           
           # INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
