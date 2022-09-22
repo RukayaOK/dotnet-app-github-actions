@@ -10,7 +10,7 @@ on:
       docker-images:
         required: true
         type: string
-        description: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"},{\"path\":\"Dockerfile\",\"name\":\"simpleworkservice2\"}]}"
+        description: "List of maps containing: [{<dockerfile-path>:<dockerimage-name>}]"
         default: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}]}"
       format-severity:
         required: true
