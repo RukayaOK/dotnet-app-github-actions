@@ -118,17 +118,8 @@ jobs:
       run: |
         VAR="Format `failure` \n Format Checker details: [Run #3103917417](https://github.com/RukayaOK/SimpleWorkerService/actions/runs/3103917417)\n Pusher: @RukayaOK"
         
-        sql="
-        SELECT c1, c2
-        from Table1, Table2
-        where ...
-        "
-        
-        echo $VAR
-        echo $sql
-        
         echo "::set-output name=packageJsonnew::$VAR"
-        echo "::set-output name=packageJsonsql::$sql"
+        echo "::set-output name=packageJsonsql::$VAR"
         
           
     - name: Comment on PR
