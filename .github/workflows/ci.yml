@@ -175,6 +175,8 @@ jobs:
   
   
   prepare-container-image-scan:
+    needs:
+      - set-default-values
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
@@ -183,7 +185,7 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          input: "${{ env.DEFAULT_DOCKER_IMAGES }}"
+          input: "${{ needs.set-default-values.outputs.docker_image }}"
           
   scan-container-image:
     needs:
