@@ -116,7 +116,8 @@ jobs:
       if: failure() && github.event_name == 'pull_request'
       id: new_pr
       run: |
-        VAR="Format `failure` \n Format Checker details: [Run #3103917417](https://github.com/RukayaOK/SimpleWorkerService/actions/runs/3103917417)\n Pusher: @RukayaOK"
+        VAR="Format"
+        echo $VAR
         
         echo "::set-output name=packageJsonnew::$VAR"
         echo "::set-output name=packageJsonsql::$VAR"
