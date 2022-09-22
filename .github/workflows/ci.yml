@@ -174,23 +174,17 @@ jobs:
         uses: github/codeql-action/analyze@v2  
   
   
-  prepare-container-image-scan: 
-    needs:
-      - set-default-values
+  prepare-container-image-scan:
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-    
-    - name: output steps
-      run: echo ${{ needs.set-default-values.outputs.docker_image }}
-      
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          input: ${{ needs.set-default-values.outputs.docker_image }}
-                  
+          input: ${{ inputs.docker-images }}
+          
   scan-container-image:
     needs:
       - prepare-container-image-scan
@@ -205,10 +199,9 @@ jobs:
       - name: Build image
         run: |
           docker build . -f ${{ matrix.path }} -t ${{ matrix.name }}:${{ github.sha }}
-
       - name: Scan image
         uses: Azure/container-scan@v0
         with:
           image-name: ${{ matrix.name }}:${{ github.sha }}
           severity-threshold: CRITICAL
-          run-quality-checks: true  
+          run-quality-checks: true 
