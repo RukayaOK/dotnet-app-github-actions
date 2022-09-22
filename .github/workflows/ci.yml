@@ -101,10 +101,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `# Images
-
-              # Title 
-              ![](https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png)`
+            body: "**Failure in Code Format Check** ${{ steps.new_pr.outputs.packageJsonsql }}"
           })
           
   run-tests:
