@@ -94,7 +94,7 @@ jobs:
         echo $FORMAT_ISSUES_REPORT
     
     - name: Set the values
-      id: set_defaults2
+      id: set_defaultstwo
       if: failure() && github.event_name == 'pull_request'
       run: |
         INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
@@ -104,10 +104,21 @@ jobs:
         FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)
         FORMAT_ISSUES_REPORT=${FORMAT_ISSUES_REPORT// /}
         echo "::set-output name=format_results::${FORMAT_ISSUES_REPORT}"
+        
+        content=`cat ./format-results/format-issues.json`
+        # the following lines are only required for multi line json
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        # end of optional handling for multi line json
+        echo "::set-output name=packageJson::$content"
+          
           
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
-      run: echo hello && echo ${{ steps.set_defaults2.outputs.format_results }} && echo bye 
+    - run: |
+          echo hello && echo ${{ steps.set_defaultstwo.outputs.format_results }} && echo bye 
+          echo "${{fromJson(steps.set_defaultstwo.outputs.packageJson).version}}"
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
