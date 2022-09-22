@@ -11,5 +11,5 @@ jobs:
   call-reusable-workflow-20:
     uses: RukayaOK/SimpleWorkerService/.github/workflows/test-workflowcall.yml@main
     with:
-      name: henry
+      username: henry
     secrets: inherit
