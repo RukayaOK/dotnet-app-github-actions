@@ -1,10 +1,6 @@
 name: CI
 
 on:
-  #pull_request:
-  #  branches:
-  #    - main
-      
   workflow_dispatch:
     inputs:
       docker-images:
@@ -36,7 +32,6 @@ env:
 jobs:
   
   check-code-formatting:
-    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Check Code Format
     
@@ -80,7 +75,6 @@ jobs:
           })
           
   run-tests: 
-    if: ${{ false }}
     name: Run Tests Against Code
     runs-on: ubuntu-latest
     
@@ -112,9 +106,9 @@ jobs:
           reporter: dotnet-trx        # Format of test results
             
     
-  scan-code-codeQL:
-    if: ${{ false }}  # disable until Advance Security License Purchased
-    name: Scan Code with Code QL
+  scan-code:
+    if: ${{ false }}  # disable until Github Advanced Security License purchased
+    name: Scan Code
     runs-on: ubuntu-latest
     
     steps:
@@ -140,45 +134,7 @@ jobs:
         uses: github/codeql-action/analyze@v2  
   
   
-  scan-code-snyk:
-    name: Scan Code with Snyk
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: "Restore dependencies"
-        run: dotnet restore ${{ env.SOLUTION_FILE }}
-
-      - name: "Build the App"
-        run: dotnet build --no-restore ${{ env.SOLUTION_FILE }}
-        
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/dotnet@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor
-          args: --all-projects
-      
-      - uses: snyk/actions/setup@master
-      - name: Snyk Code Test
-        continue-on-error: true
-        run: snyk code test --sarif > snyk_sarif
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Upload results to Github Code Scanning
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: snyk_sarif
-          
-          
   prepare-container-image-scan:
-    if: ${{ false }}
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
