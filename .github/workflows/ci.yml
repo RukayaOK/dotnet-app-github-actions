@@ -110,10 +110,7 @@ jobs:
       run: |
         VAR="Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
         
-        VAR="Workflow name: ${{ github.workflow }} \n Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-        
-        content="Workflow name: ${{ github.workflow }} \n 
-        Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+        VAR="Workflow name: ${{ github.workflow }} \n Action: ${{ github.event_name }} \n Job: ${{ github.job }} \n PR: #${{ github.event.number }} \nFormat Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n Pusher: @${{ github.actor }}"
         
         # reading multi-line json file
         content="${content//'%'/'%25'}"
@@ -138,7 +135,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: "${{ steps.new_pr.outputs.packageJson }}"
+            body: "${{ steps.new_pr.outputs.packageJsonsql }}"
           })
           
   run-tests:
