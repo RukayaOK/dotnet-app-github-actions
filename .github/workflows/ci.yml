@@ -36,6 +36,7 @@ env:
 jobs:
   
   check-code-formatting:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Check Code Format
     
@@ -79,6 +80,7 @@ jobs:
           })
           
   run-tests: 
+    if: ${{ false }}
     name: Run Tests Against Code
     runs-on: ubuntu-latest
     
@@ -111,7 +113,7 @@ jobs:
             
     
   scan-code-codeQL:
-    if: ${{ false }}  # disable for now
+    if: ${{ false }}  # disable until Advance Security License Purchased
     name: Scan Code with Code QL
     runs-on: ubuntu-latest
     
@@ -150,6 +152,7 @@ jobs:
           
           
   prepare-container-image-scan:
+    if: ${{ false }}
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
