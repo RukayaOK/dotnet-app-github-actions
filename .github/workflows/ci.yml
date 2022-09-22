@@ -112,7 +112,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: "Please change PR Title!! \n ${{ env.DOTNET_VERSION }}"
+            body: "Please change PR Title!! \n ${{ steps.format_results.outputs.packageJson }}"
           })
           
   run-tests:
