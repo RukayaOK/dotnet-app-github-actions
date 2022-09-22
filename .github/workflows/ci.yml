@@ -51,9 +51,17 @@ jobs:
       - name: Set the values
         id: set_defaults
         run: |
-          INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
-          DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
-          echo "::set-output name=docker_image::$DOCKER_IMAGES"
+          if [ -z "${{ github.event.inputs.docker-images }}" ]; then
+              echo "${{ env.DEFAULT_DOCKER_IMAGES }}"
+              echo "::set-output name=docker_image::${{ env.DEFAULT_DOCKER_IMAGES }}"
+          else
+              echo "${{ github.event.inputs.docker-images }}"
+              echo "::set-output name=docker_image::${{ github.event.inputs.docker-images }}"
+          fi
+          
+          # INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
+          # DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          # echo "::set-output name=docker_image::$DOCKER_IMAGES"
           
           echo 1
           echo $INPUT_DOCKER_IMAGES
@@ -66,6 +74,10 @@ jobs:
           INPUT_FORMAT_SEVERITY=${{ github.event.inputs.docker-images }}
           FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}
           echo "::set-output name=format_severity::$FORMAT_SEVERITY"
+          
+      - name: outputs
+        run: echo "${{ steps.set_defaults.outputs.docker_image }}" && echo ${{ steps.set_defaults.outputs.docker_image }}
+        
     
   check-code-formatting:
     if: ${{ false }}
