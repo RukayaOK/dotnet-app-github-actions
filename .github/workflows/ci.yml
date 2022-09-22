@@ -51,7 +51,8 @@ jobs:
           
           INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
           DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
-          echo "DOCKER_IMAGES=$(echo $DOCKER_IMAGES)" >> $GITHUB_ENV
+          echo $DOCKER_IMAGES
+          echo "DOCKER_IMAGES=$DOCKER_IMAGES" >> $GITHUB_ENV
           echo ${{ env.DOCKER_IMAGES }}
     
   check-code-formatting:
