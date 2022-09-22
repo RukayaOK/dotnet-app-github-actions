@@ -98,21 +98,18 @@ jobs:
       if: failure() && github.event_name == 'pull_request'
       run: |
         content=$(cat format-results/format-issues.json)
-        # Assuming we have a $content variable already populated 
+        # reading multi-line json file
         content="${content//'%'/'%25'}"
         content="${content//$'\n'/'%0A'}"
         content="${content//$'\r'/'%0D'}"
+        # finished reading multi-line json file
         echo "::set-output name=packageJson::$content"
           
           
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
       run: |
-          echo hello && echo ${{ steps.set_defaultstwo.outputs.packageJson }} && echo bye 
-          # echo "${{fromJson(steps.set_defaultstwo.outputs.packageJson)}}"
-          # echo hi again 
-          # echo ${{ steps.set_defaultstwo.outputs.packageJson }}
-          # echo by. again
+        echo ${{ steps.set_defaultstwo.outputs.packageJson }} 
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
