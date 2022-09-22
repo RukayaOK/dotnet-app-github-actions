@@ -93,9 +93,19 @@ jobs:
         echo "::set-output name=format_results::$FORMAT_ISSUES_REPORT"
         echo $FORMAT_ISSUES_REPORT
     
+    - name: Set the values
+      id: set_defaults2
+      run: |
+        INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
+        DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+        echo "::set-output name=docker_image::$DOCKER_IMAGES"
+        
+        FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)
+        echo "::set-output name=format_results::$FORMAT_ISSUES_REPORT"
+          
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
-      run: echo hello && echo ${{ steps.format_results.outputs.format_results }} && echo bye 
+      run: echo hello && echo ${{ steps.set_defaults2.outputs.docker_image }} && echo bye 
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
