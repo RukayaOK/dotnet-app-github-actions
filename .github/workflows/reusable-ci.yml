@@ -9,7 +9,7 @@ on:
 
 jobs:
   call-reusable-workflow-20:
-    uses: RukayaOK/SimpleWorkerService/.github/workflows/test-workflowcall.yml@main
+    uses: RukayaOK/reusable-actions/.github/workflows/test-workflowcall.yml@main
     with:
       username: henry
     secrets: inherit
