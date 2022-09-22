@@ -82,8 +82,6 @@ jobs:
     
   check-code-formatting:
     if: ${{ false }}
-    needs:
-      - set-default-values
     runs-on: ubuntu-latest
     name: Check Code Format
     
@@ -188,8 +186,6 @@ jobs:
   
   
   prepare-container-image-scan:
-    needs:
-      - set-default-values
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
