@@ -83,25 +83,18 @@ jobs:
     - name: Check Code Format
       id: formatCheck
       run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ needs.set-default-values.outputs.format_severity }} --report format-results/format-issues.json
-          
-    - name: Upload format issues 
-      if: always() && github.event_name == 'pull_request'
-      uses: actions/upload-artifact@v1
-      with:
-        name: results
-        path: format-results
-    
+        
+    # https://github.com/actions/upload-artifact/issues/50
     - name: Get Code Format Results
       if: failure() && github.event_name == 'pull_request'
+      id: format_results
       run: |
         FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)
+        # echo "::set-output name=format-issue-report::$FORMAT_ISSUES_REPORT"
         echo $FORMAT_ISSUES_REPORT
-        # echo "FORMAT_ISSUES_REPORT=${FORMAT_ISSUES_REPORT}" >> $GITHUB_ENV
     
-    - name: Output
-      if: failure() && github.event_name == 'pull_request'
-      run: |
-        echo ${{ env.FORMAT_ISSUES_REPORT }}
+    - name: Output 
+      run: echo ${{ steps.format_results.outputs.stdout }}  
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
