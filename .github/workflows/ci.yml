@@ -179,8 +179,8 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          # input: ${{ inputs.docker-images }}
-          input: ${{ needs.set-default-values.outputs.docker_image }}
+          input: ${{ inputs.docker-images }}
+          # input: ${{ needs.set-default-values.outputs.docker_image }}
           
   scan-container-image:
     needs:
