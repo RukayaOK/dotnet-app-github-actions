@@ -113,7 +113,7 @@ jobs:
         path: format-results/format-issues.json
    
     - name: PR comment new
-      if: failure() && github.event_name == 'pull_request'
+      if: failure() && github.event_name != 'pull_request'
       id: new_pr
       run: |
         read -r -d '' VAR << EOM
@@ -146,7 +146,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: "${{ steps.new_pr.outputs.packageJsonnew }}"
+            body: "Format `failure` \n Format Checker details: [Run #3103917417](https://github.com/RukayaOK/SimpleWorkerService/actions/runs/3103917417)\n Pusher: @RukayaOK"
           })
           
   run-tests:
