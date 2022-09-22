@@ -47,11 +47,9 @@ jobs:
         run: |
           INPUT_FORMAT_SEVERITY=${{ github.event.inputs.format-severity }}
           echo "FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}" >> $GITHUB_ENV
-          echo $FORMAT_SEVERITY
 
           INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
           echo "DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}" >> $GITHUB_ENV
-          echo $DOCKER_IMAGES
     
     
   check-code-formatting:
@@ -75,7 +73,7 @@ jobs:
     
     - name: Check Code Format
       id: formatCheck
-      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ inputs.format-severity }} --report format-results/format-issues.json
+      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ env.FORMAT_SEVERITY }} --report format-results/format-issues.json
           
     - name: Upload format issues 
       if: always() && github.event_name == 'pull_request'
