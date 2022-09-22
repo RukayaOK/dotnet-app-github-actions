@@ -144,7 +144,7 @@ jobs:
     name: Scan Code with Snyk
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/dotnet@master
         env:
