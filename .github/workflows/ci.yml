@@ -117,6 +117,9 @@ jobs:
       id: new_pr
       run: |
         VAR="Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+        
+        VAR="Workflow name: ${{ github.workflow }} \n Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+        
         echo $VAR
         
         echo "::set-output name=packageJsonnew::$VAR"
