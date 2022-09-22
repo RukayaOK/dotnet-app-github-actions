@@ -15,20 +15,45 @@ on:
       format-severity:
         required: true
         type: choice
+        default: error
         options:
         - error
         - info
         - warn
-        default: error
-  
+        
 env:
-  DOTNET_VERSION: 6.0.x
-  TESTS_FOLDER: SimpleWorkerService.Tests
+  # for format 
+  DEFAULT_FORMAT_SEVERITY: error
+  
+  # for build 
   SOLUTION_FILE: SimpleWorkerService.sln
-  DOCKLE_HOST: "unix:///var/run/docker.sock" # for Azure/container-scan@v0 on ubuntu-latest
+  DOTNET_VERSION: 6.0.x
+  
+  # for test 
+  TESTS_FOLDER: SimpleWorkerService.Tests
+  
+  # for scan - Azure/container-scan@v0 on ubuntu-latest
+  DOCKLE_HOST: "unix:///var/run/docker.sock" 
+  DEFAULT_DOCKER_IMAGES: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}]}"
+  
 
 jobs:
-      
+  
+  set-defaults:
+    runs-on: ubuntu-latest
+    name: Set default values
+    steps:
+      - name: Set Defaults
+        run: |
+          DEFAULT_FORMAT_SEVERITY=${{ github.event.inputs.format-severity }}
+          DEFAULT_FORMAT_SEVERITY=${DEFAULT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}
+          echo $DEFAULT_FORMAT_SEVERITY
+          
+          DEFAULT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
+          DEFAULT_DOCKER_IMAGES=${DEFAULT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          echo $DEFAULT_DOCKER_IMAGES
+    
+    
   check-code-formatting:
     runs-on: ubuntu-latest
     name: Check Code Format
