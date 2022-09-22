@@ -44,30 +44,21 @@ jobs:
     name: Set default values
     
     outputs:
-        output1: ${{ steps.step1.outputs.docker_image }}
-        # output2: ${{ steps.step1.outputs.format_severity }}
+        format_severity: ${{ steps.set_defaults.outputs.format_severity }}
+        docker_image: ${{ steps.set_defaults.outputs.docker_image }}
         
     steps:
     
       - name: Set the value
-        id: step1
+        id: set_defaults
         run: |
           INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
           DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
-          # echo "DOCKER_IMAGES=${DOCKER_IMAGES}" >> $GITHUB_ENV
           echo "::set-output name=docker_image::$DOCKER_IMAGES"
           
           INPUT_FORMAT_SEVERITY=${{ github.event.inputs.docker-images }}
           FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}
-          # echo "FORMAT_SEVERITY=${FORMAT_SEVERITY}" >> $GITHUB_ENV
-          # echo "::set-output name=format_severity::$FORMAT_SEVERITY"
-      
-      - name: Use the value
-        id: step_two
-        run: |
-          echo "${{ env.DOCKER_IMAGES }}"
-          echo "${{ env.FORMAT_SEVERITY }}"
-      
+          echo "::set-output name=format_severity::$FORMAT_SEVERITY"
     
   check-code-formatting:
     needs:
@@ -76,9 +67,7 @@ jobs:
     name: Check Code Format
     
     steps:
-    - name: Output vars
-      run: echo ${{ needs.set-default-values.outputs.output1 }}
-      
+    
     - name: Checkout code
       uses: actions/checkout@v2
       with:
@@ -95,7 +84,7 @@ jobs:
     
     - name: Check Code Format
       id: formatCheck
-      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ env.FORMAT_SEVERITY }} --report format-results/format-issues.json
+      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ needs.set-default-values.outputs.format_severity }} --report format-results/format-issues.json
           
     - name: Upload format issues 
       if: always() && github.event_name == 'pull_request'
