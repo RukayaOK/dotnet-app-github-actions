@@ -94,6 +94,7 @@ jobs:
         echo $FORMAT_ISSUES_REPORT
     
     - name: Output 
+      if: failure() && github.event_name == 'pull_request'
       run: echo ${{ steps.format_results.outputs.stdout }}  
       
     - name: Comment on PR
