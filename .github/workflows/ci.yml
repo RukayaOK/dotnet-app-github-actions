@@ -103,14 +103,6 @@ jobs:
       if: failure() && github.event_name != 'pull_request'
       run: |
         echo "${{ steps.format_results.outputs.packageJson }}"
-    
-    - name: comment PR
-      if: failure() && github.event_name != 'pull_request'
-      uses: machine-learning-apps/pr-comment@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        path: format-results/format-issues.json
    
     - name: PR comment new
       if: failure() && github.event_name == 'pull_request'
@@ -119,6 +111,9 @@ jobs:
         VAR="Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
         
         VAR="Workflow name: ${{ github.workflow }} \n Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+        
+        VAR="Workflow name: ${{ github.workflow }} \n 
+        Format Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
         
         echo $VAR
         
