@@ -108,7 +108,8 @@ jobs:
           
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
-      run: ${{ steps.set_defaultstwo.outputs.packageJson }} 
+      run: |
+        echo ${{ steps.set_defaultstwo.outputs.packageJson }} 
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
