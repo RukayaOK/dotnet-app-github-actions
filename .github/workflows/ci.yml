@@ -90,12 +90,12 @@ jobs:
       id: format_results
       run: |
         FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)
-        echo "::set-output name=format::$FORMAT_ISSUES_REPORT"
+        echo "::set-output name=format_results::$FORMAT_ISSUES_REPORT"
         echo $FORMAT_ISSUES_REPORT
     
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
-      run: echo hello && echo ${{ steps.run_tests.outputs.format }} && echo bye 
+      run: echo hello && echo ${{ steps.format_results.outputs.format_results }} && echo bye 
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
