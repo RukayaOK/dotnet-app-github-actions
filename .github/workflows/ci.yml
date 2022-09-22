@@ -91,6 +91,7 @@ jobs:
       run: |
         content=$(cat format-results/format-issues.json)
         content=$(echo $content | jq -R .)
+        content=$(jq '.' format-results/format-issues.json | jq -sR '.')
         # reading multi-line json file
         content="${content//'%'/'%25'}"
         content="${content//$'\n'/'%0A'}"
