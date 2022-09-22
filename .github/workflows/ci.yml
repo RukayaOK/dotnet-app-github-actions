@@ -102,7 +102,7 @@ jobs:
         echo "::set-output name=docker_image::$DOCKER_IMAGES"
         
         FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)
-        echo "::set-output name=format_results::$FORMAT_ISSUES_REPORT"
+        echo "::set-output name=format_results::${FORMAT_ISSUES_REPORT}"
           
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
