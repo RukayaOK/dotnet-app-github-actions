@@ -10,29 +10,61 @@ on:
       docker-images:
         required: true
         type: string
-        description: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"},{\"path\":\"Dockerfile\",\"name\":\"simpleworkservice2\"}]}"
+        description: "List of maps containing: [{<dockerfile-path>:<dockerimage-name>}]"
         default: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}]}"
       format-severity:
         required: true
         type: choice
+        default: error
         options:
         - error
         - info
         - warn
-        default: error
-  
+        
 env:
-  DOTNET_VERSION: 6.0.x
-  TESTS_FOLDER: SimpleWorkerService.Tests
+  # for format 
+  DEFAULT_FORMAT_SEVERITY: error
+  
+  # for build 
   SOLUTION_FILE: SimpleWorkerService.sln
-  DOCKLE_HOST: "unix:///var/run/docker.sock" # for Azure/container-scan@v0 on ubuntu-latest
+  DOTNET_VERSION: 6.0.x
+  
+  # for test 
+  TESTS_FOLDER: SimpleWorkerService.Tests
+  
+  # for scan - Azure/container-scan@v0 on ubuntu-latest
+  DOCKLE_HOST: "unix:///var/run/docker.sock" 
+  DEFAULT_DOCKER_IMAGES: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}]}"
+  
 
 jobs:
-      
+  
+  set-default-values:
+    runs-on: ubuntu-latest
+    name: Set default values
+    
+    outputs:
+        format_severity: ${{ steps.set_defaults.outputs.format_severity }}
+        docker_image: ${{ steps.set_defaults.outputs.docker_image }}
+        
+    steps:
+      - name: Set the values
+        id: set_defaults
+        run: |
+          INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
+          DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          echo "::set-output name=docker_image::$DOCKER_IMAGES"
+          
+          INPUT_FORMAT_SEVERITY=${{ github.event.inputs.docker-images }}
+          FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}
+          echo "::set-output name=format_severity::$FORMAT_SEVERITY"
+    
   check-code-formatting:
+    needs:
+      - set-default-values
     runs-on: ubuntu-latest
     name: Check Code Format
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -50,37 +82,17 @@ jobs:
     
     - name: Check Code Format
       id: formatCheck
-      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ inputs.format-severity }} --report format-results/format-issues.json
-    
-    - name: If PR Then Comment on PR
+      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ needs.set-default-values.outputs.format_severity }} --report format-results/format-issues.json
+   
+    - name: Render Pull Request Comment
       if: failure() && github.event_name == 'pull_request'
-      uses: allthatjazzleo/actions-pull-request-add-comment@master
-      with:
-        message: 'yoyo🤙🏻'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-    - name: Upload format issues 
-      if: always() && github.event_name == 'pull_request'
-      uses: actions/upload-artifact@v1
-      with:
-        name: results
-        path: format-results
-    
-    - name: Add comment to PR
-      if: always() 
-      env:
-        URL: ${{ github.event.issue.comments_url }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      id: pull_request_comment
       run: |
-        curl \
-          -X POST \
-          $URL \
-          -H "Content-Type: application/json" \
-          -H "Authorization: token $GITHUB_TOKEN" \
-          --data '{ "body": "blah blah" }'
-          
-    - name: Comment on PR
-      if: always() && github.event_name == 'pull_request'
+        PULL_REQUEST_COMMENT="Workflow name: ${{ github.workflow }} \n Action: ${{ github.event_name }} \n Job: ${{ github.job }} \n PR: #${{ github.event.number }} \nFormat Checker details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) \n Pusher: @${{ github.actor }}"
+        echo "::set-output name=pull_request_comment::$PULL_REQUEST_COMMENT"
+         
+    - name: Comment on Pull Request
+      if: failure() && github.event_name == 'pull_request'
       uses: actions/github-script@v6
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
@@ -89,13 +101,14 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Please change PR Title!!'
+            body: "**Failure in Code Format Check** \n ${{ steps.pull_request_comment.outputs.pull_request_comment }}"
           })
           
   run-tests:
     if: ${{ false }} 
     name: Run Tests Against Code
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v2
 
@@ -128,6 +141,7 @@ jobs:
     if: ${{ false }} 
     name: Scan Code
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v2
 
@@ -153,15 +167,20 @@ jobs:
   
   prepare-container-image-scan:
     if: ${{ false }} 
+    needs:
+      - set-default-values
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
+    
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+    
     steps:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          input: ${{ inputs.docker-images }}
+          # input: ${{ inputs.docker-images }}
+          input: ${{ needs.set-default-values.outputs.docker_image }}
           
   scan-container-image:
     if: ${{ false }} 
