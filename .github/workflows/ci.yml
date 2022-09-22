@@ -99,26 +99,28 @@ jobs:
       run: |
         INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
         DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
-        echo "::set-output name=docker_image::$DOCKER_IMAGES"
+        # echo "::set-output name=docker_image::$DOCKER_IMAGES"
         
         FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)
         FORMAT_ISSUES_REPORT=${FORMAT_ISSUES_REPORT// /}
-        echo "::set-output name=format_results::${FORMAT_ISSUES_REPORT}"
+        # echo "::set-output name=format_results::${FORMAT_ISSUES_REPORT}"
         
-        content=`cat ./format-results/format-issues.json`
-        # the following lines are only required for multi line json
+        content=$(cat format-results/format-issues.json)
+        # Assuming we have a $content variable already populated 
         content="${content//'%'/'%25'}"
         content="${content//$'\n'/'%0A'}"
         content="${content//$'\r'/'%0D'}"
-        # end of optional handling for multi line json
         echo "::set-output name=packageJson::$content"
           
           
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
       run: |
-          echo hello && echo ${{ steps.set_defaultstwo.outputs.format_results }} && echo bye 
-          echo "${{fromJson(steps.set_defaultstwo.outputs.packageJson).version}}"
+          echo hello && echo ${{ steps.set_defaultstwo.outputs.packageJson }} && echo bye 
+          echo "${{fromJson(steps.set_defaultstwo.outputs.packageJson)}}"
+          echo hi again 
+          echo ${{ steps.set_defaultstwo.outputs.packageJson }}
+          echo by. again
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
