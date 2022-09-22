@@ -180,6 +180,10 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
+    
+    - name: output steps
+      run: echo ${{ needs.set-default-values.outputs.docker_image }}
+      
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
