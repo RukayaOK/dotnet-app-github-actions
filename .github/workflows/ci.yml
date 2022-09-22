@@ -110,8 +110,9 @@ jobs:
           reporter: dotnet-trx        # Format of test results
             
     
-  scan-code:
-    name: Scan Code
+  scan-code-codeQL:
+    if: ${{ false }}  # disable for now
+    name: Scan Code with Code QL
     runs-on: ubuntu-latest
     
     steps:
@@ -137,6 +138,17 @@ jobs:
         uses: github/codeql-action/analyze@v2  
   
   
+  scan-code-snyk:
+    name: Scan Code with Snyk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/dotnet@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
+          
   prepare-container-image-scan:
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
