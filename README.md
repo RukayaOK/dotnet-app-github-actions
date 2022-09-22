@@ -3,7 +3,7 @@
 ---
 This README would normally document the steps are necessary to get your application up and running.
 
-### What is this repository for? ###
+### What is this repository for? ##
 
 * Quick summary
 * Version

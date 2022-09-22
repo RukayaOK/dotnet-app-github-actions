@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-workflow-passing-data:
-    uses: https://github.com/RukayaOK/reusable-actions/blob/main/.github/workflows/dotnet-ci.yml@main
+    uses: RukayaOK/reusable-actions/.github/workflows/dotnet-ci.yml@main
     with:
       DOTNET_VERSION: 6.0.x
       SOLUTION_FILE: SimpleWorkerService.sln
