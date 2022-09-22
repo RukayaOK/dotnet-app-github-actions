@@ -49,11 +49,11 @@ jobs:
         
     steps:
     
-      - name: Set the value
+      - name: Set the values
         id: set_defaults
         run: |
           INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
-          DOCKER_IMAGES=${"${{ github.event.inputs.docker-images }}":-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          DOCKER_IMAGES=${$INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
           echo "::set-output name=docker_image::$DOCKER_IMAGES"
           
           INPUT_FORMAT_SEVERITY=${{ github.event.inputs.docker-images }}
@@ -167,6 +167,8 @@ jobs:
   
   prepare-container-image-scan:
     if: ${{ false }} 
+    needs:
+      - set-default-values
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
@@ -175,7 +177,8 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          input: ${{ inputs.docker-images }}
+          # input: ${{ inputs.docker-images }}
+          input: ${{ needs.set-default-values.outputs.docker_image }}
           
   scan-container-image:
     if: ${{ false }} 
