@@ -90,7 +90,16 @@ jobs:
       with:
         name: results
         path: format-results
-          
+    
+    - name: Get Code Format Results 
+      run: |
+        format-issues-report=`cat format-results/format-issues.json`
+        echo "FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)" >> $GITHUB_ENV
+    
+    - name: Output
+      run: |
+        echo ${{ env.FORMAT_ISSUES_REPORT }}
+      
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
       uses: actions/github-script@v6
