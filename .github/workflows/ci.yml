@@ -55,6 +55,14 @@ jobs:
           DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
           echo "::set-output name=docker_image::$DOCKER_IMAGES"
           
+          echo 1
+          echo $DOCKER_IMAGES
+          echo 2
+          echo ${{ env.DEFAULT_DOCKER_IMAGES }}
+          echo 3
+          echo ${{ inputs.docker-images }}
+          echo 4
+          
           INPUT_FORMAT_SEVERITY=${{ github.event.inputs.docker-images }}
           FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}
           echo "::set-output name=format_severity::$FORMAT_SEVERITY"
