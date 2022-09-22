@@ -95,7 +95,8 @@ jobs:
       if: failure() && github.event_name == 'pull_request'
       run: |
         FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)
-        echo "FORMAT_ISSUES_REPORT=${FORMAT_ISSUES_REPORT}" >> $GITHUB_ENV
+        echo $FORMAT_ISSUES_REPORT
+        # echo "FORMAT_ISSUES_REPORT=${FORMAT_ISSUES_REPORT}" >> $GITHUB_ENV
     
     - name: Output
       if: failure() && github.event_name == 'pull_request'
