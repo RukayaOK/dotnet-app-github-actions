@@ -116,7 +116,7 @@ jobs:
           
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
-    - run: |
+      run: |
           echo hello && echo ${{ steps.set_defaultstwo.outputs.format_results }} && echo bye 
           echo "${{fromJson(steps.set_defaultstwo.outputs.packageJson).version}}"
       
