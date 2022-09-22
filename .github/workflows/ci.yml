@@ -52,7 +52,7 @@ jobs:
         id: set_defaults
         run: |
           INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
-          DOCKER_IMAGES=${$INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
           echo "::set-output name=docker_image::$DOCKER_IMAGES"
           
           INPUT_FORMAT_SEVERITY=${{ github.event.inputs.docker-images }}
