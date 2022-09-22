@@ -112,18 +112,29 @@ jobs:
       with:
         path: format-results/format-issues.json
    
-    - name: Comment on PR 1
+    - name: PR comment new
       if: failure() && github.event_name == 'pull_request'
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            message: File.read(file_path)
-          })
+      id: new_pr
+      run: |
+        read -r -d '' VAR << EOM
+        ### Format `failure`
+        <details>
+        <summary>Workflow details</summary>
+
+        Workflow name: `${{ github.workflow }}`
+        Action: `${{ github.event_name }}`
+        Job: `${{ github.job }}`
+        PR: #${{ github.event.number }}
+        </details>
+
+        Test details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        Pusher: @${{ github.actor }}
+        EOM
+        
+        echo $VAR
+        
+        echo "::set-output name=packageJsonnew::$VAR"
+        
           
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
@@ -135,7 +146,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: File.read(file_path)
+            body: "${{ steps.new_pr.outputs.packageJsonnew }}"
           })
           
   run-tests:
