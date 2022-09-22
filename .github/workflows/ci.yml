@@ -106,7 +106,7 @@ jobs:
           
     - name: Output 
       if: failure() && github.event_name == 'pull_request'
-      run: echo hello && echo ${{ steps.set_defaults2.outputs.docker_image }} && echo bye 
+      run: echo hello && echo ${{ steps.set_defaults2.outputs.format_results }} && echo bye 
       
     - name: Comment on PR
       if: failure() && github.event_name == 'pull_request'
