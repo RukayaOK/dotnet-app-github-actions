@@ -50,7 +50,7 @@ jobs:
           echo $FORMAT_SEVERITY
           
           # DEFAULT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
-          echo DOCKER_IMAGES=${${{ github.event.inputs.docker-images }}:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          DOCKER_IMAGES=${${{ github.event.inputs.docker-images }}:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
           echo $DOCKER_IMAGES
     
     
