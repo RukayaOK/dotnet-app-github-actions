@@ -1,18 +1,15 @@
 name: Call a reusable workflow
 
 on:
-  pull_request:
-    branches:
-      - main
-  
   workflow_dispatch:
+  
+  push:
+    branches:
+      - 'main'
 
 jobs:
-  call-workflow-passing-data:
-    uses: RukayaOK/reusable-actions/.github/workflows/dotnet-ci.yml@main
+  call-reusable-workflow-20:
+    uses: RukayaOK/SimpleWorkerService/blob/main/.github/workflows/test-workflowcall.yml@main
     with:
-      DOTNET_VERSION: 6.0.x
-      SOLUTION_FILE: SimpleWorkerService.sln
-      TESTS_FOLDER: SimpleWorkerService.Tests
-      FORMAT_CHECKER_SEVERITY: "error"
-      DOCKER_IMAGE_DETAILS: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}]}"
+      name: henry
+    secrets: inherit
