@@ -22,66 +22,20 @@ on:
         - warn
         
 env:
-  # for format 
-  DEFAULT_FORMAT_SEVERITY: error
-  
   # for build 
-  SOLUTION_FILE: SimpleWorkerService.sln
   DOTNET_VERSION: 6.0.x
+  SOLUTION_FILE: SimpleWorkerService.sln
   
   # for test 
   TESTS_FOLDER: SimpleWorkerService.Tests
   
   # for scan - Azure/container-scan@v0 on ubuntu-latest
   DOCKLE_HOST: "unix:///var/run/docker.sock" 
-  DEFAULT_DOCKER_IMAGES: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}]}"
   
 
 jobs:
   
-  set-default-values:
-    if: ${{ false }}
-    runs-on: ubuntu-latest
-    name: Set default values
-    
-    outputs:
-        format_severity: ${{ steps.set_defaults.outputs.format_severity }}
-        docker_image: ${{ steps.set_defaults.outputs.docker_image }}
-        
-    steps:
-      - name: Set the values
-        id: set_defaults
-        run: |
-          if [ -z "${{ github.event.inputs.docker-images }}" ]; then
-              echo "${{ env.DEFAULT_DOCKER_IMAGES }}"
-              echo '::set-output name=docker_image::"${{ env.DEFAULT_DOCKER_IMAGES }}"'
-          else
-              echo "${{ github.event.inputs.docker-images }}"
-              echo '::set-output name=docker_image::"${{ github.event.inputs.docker-images }}"'
-          fi
-          
-          # INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
-          # DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
-          # echo "::set-output name=docker_image::$DOCKER_IMAGES"
-          
-          echo 1
-          echo $INPUT_DOCKER_IMAGES
-          echo 2
-          echo ${{ env.DEFAULT_DOCKER_IMAGES }}
-          echo 3
-          echo $DOCKER_IMAGES
-          echo 4
-          
-          INPUT_FORMAT_SEVERITY=${{ github.event.inputs.docker-images }}
-          FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}
-          echo "::set-output name=format_severity::$FORMAT_SEVERITY"
-          
-      - name: outputs
-        run: echo "${{ steps.set_defaults.outputs.docker_image }}" && echo ${{ steps.set_defaults.outputs.docker_image }}
-        
-    
   check-code-formatting:
-    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Check Code Format
     
@@ -124,8 +78,7 @@ jobs:
             body: "**Failure in Code Format Check** \n ${{ steps.pull_request_comment.outputs.pull_request_comment }}"
           })
           
-  run-tests:
-    if: ${{ false }} 
+  run-tests: 
     name: Run Tests Against Code
     runs-on: ubuntu-latest
     
@@ -158,7 +111,6 @@ jobs:
             
     
   scan-code:
-    if: ${{ false }} 
     name: Scan Code
     runs-on: ubuntu-latest
     
