@@ -47,7 +47,10 @@ jobs:
       - name: Set the value
         id: step_one
         run: |
-          echo "action_state=yellow" >> $GITHUB_ENV
+          INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
+          DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          echo $DOCKER_IMAGES
+          echo "action_state=${DOCKER_IMAGES}" >> $GITHUB_ENV
       - name: Use the value
         id: step_two
         run: |
