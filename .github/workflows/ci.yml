@@ -194,7 +194,7 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          input: ${{ github.event.inputs.docker-images }}
+          input: "${{ github.event.inputs.docker-images }}"
           
   scan-container-image:
     needs:
