@@ -100,12 +100,12 @@ jobs:
         echo "::set-output name=packageJson::$content"
           
     - name: Output 
-      if: failure() && github.event_name == 'pull_request'
+      if: failure() && github.event_name != 'pull_request'
       run: |
         echo "${{ steps.format_results.outputs.packageJson }}"
     
     - name: comment PR
-      if: failure() && github.event_name == 'pull_request'
+      if: failure() && github.event_name != 'pull_request'
       uses: machine-learning-apps/pr-comment@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -113,27 +113,22 @@ jobs:
         path: format-results/format-issues.json
    
     - name: PR comment new
-      if: failure() && github.event_name != 'pull_request'
+      if: failure() && github.event_name == 'pull_request'
       id: new_pr
       run: |
-        read -r -d '' VAR << EOM
-        ### Format `failure`
-        <details>
-        <summary>Workflow details</summary>
-
-        Workflow name: `${{ github.workflow }}`
-        Action: `${{ github.event_name }}`
-        Job: `${{ github.job }}`
-        PR: #${{ github.event.number }}
-        </details>
-
-        Test details: [Run #${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-        Pusher: @${{ github.actor }}
-        EOM
+        VAR="Format `failure` \n Format Checker details: [Run #3103917417](https://github.com/RukayaOK/SimpleWorkerService/actions/runs/3103917417)\n Pusher: @RukayaOK"
+        
+        sql="
+        SELECT c1, c2
+        from Table1, Table2
+        where ...
+        "
         
         echo $VAR
+        echo $sql
         
         echo "::set-output name=packageJsonnew::$VAR"
+        echo "::set-output name=packageJsonsql::$sql"
         
           
     - name: Comment on PR
@@ -146,7 +141,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: "Format `failure` \n Format Checker details: [Run #3103917417](https://github.com/RukayaOK/SimpleWorkerService/actions/runs/3103917417)\n Pusher: @RukayaOK"
+            body: "${{ steps.new_pr.outputs.packageJsonsql }}"
           })
           
   run-tests:
