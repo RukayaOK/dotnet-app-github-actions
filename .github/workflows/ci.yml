@@ -48,7 +48,6 @@ jobs:
         docker_image: ${{ steps.set_defaults.outputs.docker_image }}
         
     steps:
-    
       - name: Set the values
         id: set_defaults
         run: |
@@ -67,7 +66,6 @@ jobs:
     name: Check Code Format
     
     steps:
-    
     - name: Checkout code
       uses: actions/checkout@v2
       with:
@@ -110,6 +108,7 @@ jobs:
     if: ${{ false }} 
     name: Run Tests Against Code
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v2
 
@@ -142,6 +141,7 @@ jobs:
     if: ${{ false }} 
     name: Scan Code
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v2
 
@@ -171,8 +171,10 @@ jobs:
       - set-default-values
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
+    
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+    
     steps:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
