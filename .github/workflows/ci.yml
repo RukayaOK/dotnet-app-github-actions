@@ -56,7 +56,7 @@ jobs:
     
     - name: Check Code Format
       id: formatCheck
-      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ github.event.inputs.docker-images }} --report format-results/format-issues.json
+      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ github.event.inputs.format-severity }} --report format-results/format-issues.json
    
     - name: Render Pull Request Comment
       if: failure() && github.event_name == 'pull_request'
