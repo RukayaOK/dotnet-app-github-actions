@@ -175,6 +175,8 @@ jobs:
   
   
   prepare-container-image-scan: 
+    needs:
+      - set-default-values
     name: "Prepare Container Image Scan"
     runs-on: ubuntu-latest
     outputs:
