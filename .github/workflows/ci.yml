@@ -1,9 +1,9 @@
 name: CI
 
 on:
-  pull_request:
-    branches:
-      - main
+  #pull_request:
+  #  branches:
+  #    - main
       
   workflow_dispatch:
     inputs:
@@ -40,6 +40,7 @@ env:
 jobs:
   
   set-default-values:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     name: Set default values
     
@@ -103,7 +104,7 @@ jobs:
     
     - name: Check Code Format
       id: formatCheck
-      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ needs.set-default-values.outputs.format_severity }} --report format-results/format-issues.json
+      run: dotnet format ${{ env.SOLUTION_FILE }} -v d --verify-no-changes --severity ${{ github.event.inputs.docker-images }} --report format-results/format-issues.json
    
     - name: Render Pull Request Comment
       if: failure() && github.event_name == 'pull_request'
@@ -197,7 +198,7 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          input: ${{ needs.set-default-values.outputs.docker_image }}
+          input: ${{ github.event.inputs.docker-images }}
           
   scan-container-image:
     needs:
