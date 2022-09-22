@@ -183,7 +183,7 @@ jobs:
     - id: set-matrix
       run: echo "::set-output name=matrix::$input"
       env:
-          input: ${{ inputs.docker-images }}
+          input: "{\"include\":[{\"path\":\"build/Dockerfile\",\"name\":\"simpleworkerservice\"}]}"
           
   scan-container-image:
     needs:
