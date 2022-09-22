@@ -91,12 +91,14 @@ jobs:
         name: results
         path: format-results
     
-    - name: Get Code Format Results 
+    - name: Get Code Format Results
+      if: failure() && github.event_name == 'pull_request'
       run: |
         format-issues-report=`cat format-results/format-issues.json`
         echo "FORMAT_ISSUES_REPORT=$(cat format-results/format-issues.json)" >> $GITHUB_ENV
     
     - name: Output
+      if: failure() && github.event_name == 'pull_request'
       run: |
         echo ${{ env.FORMAT_ISSUES_REPORT }}
       
