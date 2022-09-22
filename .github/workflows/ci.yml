@@ -39,7 +39,7 @@ env:
 
 jobs:
   
-  set-defaults:
+  set-default-values:
     runs-on: ubuntu-latest
     name: Set default values
     steps:
@@ -53,9 +53,11 @@ jobs:
     
     
   check-code-formatting:
+    needs:
+      - set-default-values
     runs-on: ubuntu-latest
     name: Check Code Format
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
