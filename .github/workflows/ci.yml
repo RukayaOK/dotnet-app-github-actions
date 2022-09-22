@@ -46,12 +46,12 @@ jobs:
       - name: Set Defaults
         run: |
           INPUT_FORMAT_SEVERITY=${{ github.event.inputs.format-severity }}
-          echo "FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}" >> $GITHUB_ENV
-          echo ${{ env.FORMAT_SEVERITY }}
+          FORMAT_SEVERITY=${INPUT_FORMAT_SEVERITY:-"${{ env.DEFAULT_FORMAT_SEVERITY }}"}
+          echo $FORMAT_SEVERITY
           
           INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
-          echo "DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}" >> $GITHUB_ENV
-          echo ${{ env.DOCKER_IMAGES }}
+          DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
+          echo $DOCKER_IMAGES
     
   check-code-formatting:
     needs:
