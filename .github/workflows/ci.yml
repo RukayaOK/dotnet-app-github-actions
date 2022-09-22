@@ -95,6 +95,7 @@ jobs:
     
     - name: Set the values
       id: set_defaults2
+      if: failure() && github.event_name == 'pull_request'
       run: |
         INPUT_DOCKER_IMAGES=${{ github.event.inputs.docker-images }}
         DOCKER_IMAGES=${INPUT_DOCKER_IMAGES:-"${{ env.DEFAULT_DOCKER_IMAGES }}"}
