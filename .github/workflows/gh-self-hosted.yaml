@@ -1,0 +1,17 @@
+name: Github Self Hosted 
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  plan:
+    name: Test Self Hosted
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      
+      - name: Check for docker
+        run: docker ps
