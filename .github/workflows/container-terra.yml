@@ -10,8 +10,8 @@ jobs:
     container: hashicorp/terraform:latest
     
     steps:
-      - name: Check az version 
+      - name: Check terraform version 
         run: terraform --version 
       
       - name: Initialise 
-        run: terraform --init
+        run: terraform init
