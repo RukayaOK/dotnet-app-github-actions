@@ -1,0 +1,140 @@
+name: 'Terraform'
+ 
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+env:
+  AZURE_WEBAPP_NAME: rok-ne-dev-weather-app-service-1
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    #environment: Development
+ 
+
+    defaults:
+      run:
+        shell: bash
+ 
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_wrapper: false
+         
+    - name: 'Terraform Init'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'init'
+        tf_actions_working_dir: "./terraform"
+ 
+    - name: 'Terraform Validate'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'validate'
+        tf_actions_working_dir: "./terraform"
+         
+    - name: 'Terraform Plan'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'plan'
+        tf_actions_working_dir: "./terraform"
+ 
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/master'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'apply'
+        tf_actions_working_dir: "./terraform"
+    
+    - name: Terraform Output
+      id: terraform
+      if: github.ref == 'refs/heads/master'
+      uses: hashicorp/terraform-github-actions@master
+      with:
+        tf_actions_version: 0.14.8
+        tf_actions_subcommand: 'output'
+        tf_actions_working_dir: "./terraform"
+
+    - name: Write Ouput to Artifact and Envs
+      id: terraform_output
+      env:
+          BLAH: ${{ steps.terraform.outputs.tf_actions_output }}    
+      run: |
+        mkdir -p path/to/artifact
+        WEB_APP_NAMES=$(echo $BLAH | jq -r '.app_service_names.value' | tr -d '[:space:][]')
+        echo $WEB_APP_NAMES
+        echo $WEB_APP_NAMES > path/to/artifact/app_service_names.txt
+        echo "ENV_WEB_APP_NAMES=$(echo $WEB_APP_NAMES)" >> $GITHUB_ENV
+    
+    - name: Setup Python
+      uses: actions/setup-python@v2
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: my-artifact
+        path: path/to/artifact  
+
+    - name: Format Web App Names
+      uses: jannekem/run-python-script-action@v1
+      id: script
+      with:
+        script: |
+          import os
+          web_app_names = os.environ['ENV_WEB_APP_NAMES']
+          content = []
+          for i in web_app_names.split(","):
+              web_app_name = {"app_service_name": i}
+              content.append(web_app_name)
+          web_app_names_formatted = f'{{"include": {content}}}'
+          print(web_app_names_formatted)
+      
+    - name: Store Web App Names
+      id: set-matrix
+      env:
+        WEB_APP_NAMES_FORMATTED: ${{ steps.script.outputs.stdout }}
+      run: |
+        echo "::set-output name=matrix::$(echo $WEB_APP_NAMES_FORMATTED)"
+      
+
+  placeholder:
+    needs: terraform
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJson(needs.terraform.outputs.matrix)}}
+    steps:
+    - run: echo "dotnet app will be deployed here"
+
+    - name: Download Artifact
+      uses: actions/download-artifact@master
+      with:
+        name: my-artifact
+        path: path/to/artifact
+  
+    - run: cat path/to/artifact/app_service_names.txt
+    - run: echo ${{ matrix.app_service_name }}
+
+    - name: Print Env Variable
+      env: 
+        HARDCODED_NAME: ${{ env.AZURE_WEBAPP_NAME }}
+      run: |
+        echo $HARDCODED_NAME
