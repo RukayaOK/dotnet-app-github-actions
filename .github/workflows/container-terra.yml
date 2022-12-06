@@ -1,0 +1,17 @@
+name: Self Hosted Runner - Container
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  plan:
+    name: Test Self Hosted
+    runs-on: ubuntu-latest
+    container: hashicorp/terraform:latest
+    
+    steps:
+      - name: Check az version 
+        run: terraform --version 
+      
+      - name: Initialise 
+        run: terraform --init
