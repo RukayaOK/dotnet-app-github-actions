@@ -1,6 +1,5 @@
-name: build
+name: List of Dictionaries to Matrix
 on: 
-  #push:
   
   workflow_dispatch:
     inputs:
